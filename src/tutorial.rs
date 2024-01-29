@@ -6,9 +6,6 @@ struct Person;
 #[derive(Component)]
 struct Name(String);
 
-#[derive(Resource)]
-struct GreetTimer(Timer);
-
 fn add_people(mut commands: Commands) {
     commands.spawn((Person, Name("Elaina Proctor".to_string())));
     commands.spawn((Person, Name("Renzo Hume".to_string())));
@@ -19,7 +16,10 @@ fn hello_world() {
     println!("hello world!");
 }
 
-fn greet_people(time: Res<Time>, mut timer: ResMut<GreetTimer>, query: Query<&Name, With<Person>>) {
+#[derive(Resource)]
+struct GreetTimer(Timer);
+
+fn greet_people(time: Res<Time>,  mut timer: ResMut<GreetTimer>, query: Query<&Name, With<Person>>) {
     // update our timer with the time elapsed since the last update
     // if that caused the timer to finish, we say hello to everyone
     if timer.0.tick(time.delta()).just_finished() {
@@ -47,6 +47,7 @@ impl Plugin for HelloPlugin {
             .add_systems(Update, greet_people);
     }
 }
+
 
 fn main() {
     App::new()
