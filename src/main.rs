@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use midgard::world_generator::{WorldGenerator, WorldGeneratorParameters};
 use robotics_lib::runner::Runner;
+use robotics_lib::world::tile::Tile;
 use crate::dummy_robot::DummyRobot;
 use crate::camera::CameraConfig;
 use crate::input::handle_keys;
@@ -8,6 +9,16 @@ use crate::input::handle_keys;
 mod dummy_robot;
 mod camera;
 mod input;
+mod game;
+
+struct WorldMap {
+    map_size: u64,
+    explored_map: Vec<Vec<Tile>>,
+}
+
+struct UI {
+    map: WorldMap
+}
 
 fn window_conf() -> Conf {
     Conf {
@@ -23,21 +34,16 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    let world_seed = 15;
+    let world_size = 10;
+
     let mut camera_config = CameraConfig::new(
         vec3(-20., 10., 0.),
         vec3(0., 0., 0.),
         vec3(0., 30., 0.),
     );
 
-    // let params = WorldGeneratorParameters {
-    //     seed: 15,
-    //     world_size: 200,
-    //     ..Default::default()
-    // };
-    // let mut world_generator = WorldGenerator::new(params);
-    // let robot = DummyRobot::default();
 
-    // let mut game = Runner::new(Box::new(robot), &mut world_generator).expect("Error during runner creation");
 
     loop {
         //Background
@@ -55,7 +61,7 @@ async fn main() {
         draw_grid(20, 1., BLACK, GRAY);
         draw_affine_parallelepiped(Vec3::ZERO, 3. * Vec3::X, 2. * Vec3::Y, 5. * Vec3::Z, None, RED);
 
-        //game.game_tick().expect("Error during game tick");
+        game.game_tick().expect("Error during game tick");
 
         next_frame().await
     }
