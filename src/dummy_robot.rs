@@ -18,31 +18,14 @@ impl Default for DummyRobot {
 
 impl Runnable for DummyRobot {
     fn process_tick(&mut self, world: &mut World) {
-        //sleep(time::Duration::from_secs(1));
-
         println!("VIEW AROUND");
         let robot_view= robot_view(self, world);
-        for row in robot_view.iter() {
-            for col in row.iter() {
-                match col {
-                    None => println!("default_unknown_tile"),
-                    Some(tile) => println!("{:?}", tile.tile_type),
-                }
-            }
-        }
+        println!("GET MAP");
+        let robot_world = robot_map(world).expect("Problem calling robot_map (probably Mutex problems)");
+        println!("MOVE AROUND");
+        go(self, world, Direction::Left).expect("Error in go function");
 
-        // println!("GET MAP");
-        // let robot_world = robot_map(world).unwrap();
-        // for row in robot_world.iter() {
-        //     for elem in row.iter() {
-        //         match elem {
-        //             None => println!("No tile"),
-        //             Some(tile) => println!("{:?}", tile),
-        //         }
-        //     }
-        // }
-
-        //go(self, world, Direction::Left).expect("Error in go function");
+        sleep(time::Duration::from_secs(1));
     }
 
     fn handle_event(&mut self, event: Event) {
