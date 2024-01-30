@@ -1,105 +1,58 @@
-use bevy::prelude::*;
-use bevy_ecs_tilemap::prelude::*;
-use robotics_lib::energy::Energy;
-use robotics_lib::runner::Runner;
-use robotics_lib::runner::Robot;
-use robotics_lib::runner::Runnable;
-use robotics_lib::world::world_generator::Generator;
-use robotics_lib::interface::Tools;
+use macroquad::prelude::*;
 
-mod helpers;
-
-fn startup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    #[cfg(all(not(feature = "atlas"), feature = "render"))] array_texture_loader: Res<
-        ArrayTextureLoader,
-    >,
-) {
-    commands.spawn(Camera2dBundle::default());
-
-    let texture_handle: Handle<Image> = asset_server.load("tiles.png");
-
-    let map_size = TilemapSize { x: 32, y: 32 };
-
-    // Create a tilemap entity a little early.
-    // We want this entity early because we need to tell each tile which tilemap entity
-    // it is associated with. This is done with the TilemapId component on each tile.
-    // Eventually, we will insert the `TilemapBundle` bundle on the entity, which
-    // will contain various necessary components, such as `TileStorage`.
-    let tilemap_entity = commands.spawn_empty().id();
-
-    // To begin creating the map we will need a `TileStorage` component.
-    // This component is a grid of tile entities and is used to help keep track of individual
-    // tiles in the world. If you have multiple layers of tiles you would have a tilemap entity
-    // per layer, each with their own `TileStorage` component.
-    let mut tile_storage = TileStorage::empty(map_size);
-
-    // Spawn the elements of the tilemap.
-    // Alternatively, you can use helpers::filling::fill_tilemap.
-    for x in 0..map_size.x {
-        for y in 0..map_size.y {
-            let tile_pos = TilePos { x, y };
-            let tile_entity = commands
-                .spawn(TileBundle {
-                    position: tile_pos,
-                    tilemap_id: TilemapId(tilemap_entity),
-                    ..Default::default()
-                })
-                .id();
-            tile_storage.set(&tile_pos, tile_entity);
-        }
-    }
-
-    let tile_size = TilemapTileSize { x: 16.0, y: 16.0 };
-    let grid_size = tile_size.into();
-    let map_type = TilemapType::default();
-
-    commands.entity(tilemap_entity).insert(TilemapBundle {
-        grid_size,
-        map_type,
-        size: map_size,
-        storage: tile_storage,
-        texture: TilemapTexture::Single(texture_handle),
-        tile_size,
-        transform: get_tilemap_center_transform(&map_size, &grid_size, &map_type, 0.0),
+fn window_conf() -> Conf {
+    Conf {
+        window_title: "Window Conf".to_owned(),
+        fullscreen: true,
+        platform: miniquad::conf::Platform {
+            linux_backend: miniquad::conf::LinuxBackend::WaylandOnly,
+            ..Default::default()
+        },
         ..Default::default()
-    });
+    }
+}
 
-    // Add atlas to array texture loader so it's preprocessed before we need to use it.
-    // Only used when the atlas feature is off and we are using array textures.
-    #[cfg(all(not(feature = "atlas"), feature = "render"))]
-    {
-        array_texture_loader.add(TilemapArrayTexture {
-            texture: TilemapTexture::Single(asset_server.load("tiles.png")),
-            tile_size,
+#[macroquad::main("3D")]
+async fn main() {
+    let rust_logo = load_texture("examples/rust.png").await.unwrap();
+    let ferris = load_texture("examples/ferris.png").await.unwrap();
+
+    loop {
+        clear_background(LIGHTGRAY);
+
+        // Going 3d!
+
+        set_camera(&Camera3D {
+            position: vec3(-20., 15., 0.),
+            up: vec3(0., 1., 0.),
+            target: vec3(0., 0., 0.),
             ..Default::default()
         });
+
+        draw_grid(20, 1., BLACK, GRAY);
+
+        draw_cube_wires(vec3(0., 1., -6.), vec3(2., 2., 2.), DARKGREEN);
+        draw_cube_wires(vec3(0., 1., 6.), vec3(2., 2., 2.), DARKBLUE);
+        draw_cube_wires(vec3(2., 1., 2.), vec3(2., 2., 2.), YELLOW);
+
+        draw_plane(vec3(-8., 0., -8.), vec2(5., 5.), Some(&ferris), WHITE);
+
+        draw_cube(
+            vec3(-5., 1., -2.),
+            vec3(2., 2., 2.),
+            Some(&rust_logo),
+            WHITE,
+        );
+        draw_cube(vec3(-5., 1., 2.), vec3(2., 2., 2.), Some(&ferris), WHITE);
+        draw_cube(vec3(2., 0., -2.), vec3(0.4, 0.4, 0.4), None, BLACK);
+
+        draw_sphere(vec3(-8., 0., 0.), 1., None, BLUE);
+
+        // Back to screen space, render some text
+
+        set_default_camera();
+        draw_text("WELCOME TO 3D WORLD", 10.0, 20.0, 30.0, BLACK);
+
+        next_frame().await
     }
-}
-
-fn game_logic_startup() {
-    //world generator with generator implementation
-
-    //robot with runnable implementation
-
-    //handle errors
-    let  _ = Runner::new( Box::new(robot), &mut generator).unwrap();
-}
-
-fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin{
-            primary_window: Some(Window {
-                title: String::from(
-                    "Basic Example",
-                ),
-                ..Default::default()
-            }),
-            ..default()
-        }).set(ImagePlugin::default_nearest()))
-        .add_plugins(TilemapPlugin)
-        .add_systems(Startup, startup)
-        .add_systems(Update, helpers::camera::movement)
-        .run();
 }
