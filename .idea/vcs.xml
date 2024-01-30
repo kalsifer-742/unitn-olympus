@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/dependencies/Robotic-Lib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/dependencies/bevy_ecs_tilemap" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/dependencies/midgard" vcs="Git" />
   </component>
 </project>
