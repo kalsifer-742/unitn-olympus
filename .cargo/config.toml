@@ -1,0 +1,2 @@
+[registries]
+kellnr = { index = "sparse+https://advancedprogramming.disi.unitn.it/api/v1/crates/", token = "2fa0ce339c5e54f521cd8784fe01b360" }
