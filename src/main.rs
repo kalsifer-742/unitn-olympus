@@ -12,6 +12,9 @@ mod dummy_robot;
 fn window_conf() -> Conf {
     Conf {
         window_title: "Olympus".to_owned(),
+        window_width: 1920,
+        window_height: 1080,
+        fullscreen: false,
         ..Default::default()
     }
 }
@@ -25,13 +28,14 @@ async fn main() {
         Runner::new(Box::new(robot), &mut world_generator).expect("Error creating runner")
     );
 
+    gui.borrow().init();
     loop {
         //Background
         GUI::draw_background();
         //Input
         gui.borrow_mut().handle_input();
         //Camera
-        set_camera(&gui.borrow().camera);
+        set_camera(gui.borrow_mut().camera.get_actual_camera());
 
         game_logic.tick();
         gui.borrow().draw_world();

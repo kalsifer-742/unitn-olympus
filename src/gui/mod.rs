@@ -1,8 +1,9 @@
 use macroquad::prelude::*;
 use robotics_lib::world::tile::Tile;
+use crate::gui::camera::Direction;
 
 pub mod game_logic;
-mod input;
+mod camera;
 
 pub struct WorldMap {
     pub map_size: u64,
@@ -26,23 +27,54 @@ impl Default for WorldMap {
 
 pub struct GUI {
     pub world_map: WorldMap,
-    pub camera: Camera3D,
+    pub camera: camera::Camera,
 }
 
 impl GUI {
-    pub fn new(world_map: WorldMap, camera: Camera3D) -> Self {
+    pub fn new(world_map: WorldMap, camera: camera::Camera) -> Self {
         Self {
             world_map,
             camera,
         }
     }
 
+    pub fn init(&self) {
+        set_cursor_grab(true);
+        show_mouse(false);
+    }
+
     pub fn offering_to_the_gods(&mut self, explored_world: Vec<Vec<Option<Tile>>>) {
         self.world_map.explored_map = explored_world;
     }
 
+    fn handle_keys(&mut self) {
+        if is_key_down(KeyCode::W) {
+            self.camera.update_position(Direction::Forward);
+        }
+        if is_key_down(KeyCode::S) {
+            self.camera.update_position(Direction::Backward);
+        }
+        if is_key_down(KeyCode::A) {
+            self.camera.update_position(Direction::Left);
+        }
+        if is_key_down(KeyCode::D) {
+            self.camera.update_position(Direction::Right);
+        }
+        if is_key_down(KeyCode::Space) {
+            self.camera.update_position(Direction::Up);
+        }
+        if is_key_down(KeyCode::LeftShift) {
+            self.camera.update_position(Direction::Down);
+        }
+    }
+
+    fn handle_mouse(&mut self) {
+        self.camera.update_orientation(mouse_position().into())
+    }
+
     pub fn handle_input(&mut self) {
-        input::handle_keys(&mut self.camera);
+        self.handle_keys();
+        self.handle_mouse();
     }
 
     pub fn draw_background() {
@@ -65,12 +97,7 @@ impl Default for GUI {
     fn default() -> Self {
         Self { 
             world_map: Default::default(),
-            camera: Camera3D {
-                position: vec3(-12.0, 10.0, 0.0),
-                target: vec3(0.0, 0.0, 0.0),
-                up: vec3(0.0, 1.0, 0.0),
-                ..Default::default()
-            },
+            camera: Default::default(),
         }
     }
 }

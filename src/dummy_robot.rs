@@ -34,11 +34,11 @@ impl DummyRobot {
 
 impl Runnable for DummyRobot {
     fn process_tick(&mut self, world: &mut World) {
-        println!("VIEW AROUND");
+        //println!("VIEW AROUND");
         let _robot_view= robot_view(self, world);
-        println!("GET MAP");
+        //println!("GET MAP");
         let robot_world = robot_map(world).expect("Problem calling robot_map (probably Mutex problems)");
-        println!("MOVE AROUND");
+        //println!("MOVE AROUND");
         
         self.gui.borrow_mut().offering_to_the_gods(robot_world);
 
