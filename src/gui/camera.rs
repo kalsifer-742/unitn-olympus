@@ -1,4 +1,4 @@
-use macroquad::{camera::{Camera3D}, experimental::camera::mouse, math::{vec2, vec3, Vec2, Vec3}, miniquad::gl::GL_SRC_ALPHA};
+use macroquad::{camera::{Camera3D}, math::{vec3, Vec2, Vec3}};
 
 pub struct Camera {
     actual_camera: Camera3D,

@@ -8,6 +8,7 @@ use robotics_lib::runner::{Robot, Runnable};
 use robotics_lib::world::coordinates::Coordinate;
 use robotics_lib::world::World;
 use olympus::gui::GUI;
+use macroquad::rand::ChooseRandom;
 
 pub struct DummyRobot{
     robot: Robot,
@@ -42,9 +43,8 @@ impl Runnable for DummyRobot {
         
         self.gui.borrow_mut().offering_to_the_gods(robot_world);
 
-        //sleep(time::Duration::from_millis(500));
-
-        if go(self, world, Direction::Left).is_err() {
+        let directions = vec![Direction::Left, Direction::Right, Direction::Up, Direction::Down];
+        if go(self, world, directions.choose().unwrap().clone()).is_err() {
             return;
         }
     }
