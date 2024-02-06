@@ -1,9 +1,10 @@
 use macroquad::prelude::*;
-use robotics_lib::world::tile::{Tile, TileType};
+use robotics_lib::{world::tile::{Tile, TileType}};
 use crate::gui::camera::Direction;
 
 pub mod game_logic;
 mod camera;
+pub mod ui;
 
 pub struct WorldMap {
     pub map_size: usize,
@@ -28,13 +29,15 @@ impl Default for WorldMap {
 pub struct GUI {
     pub world_map: WorldMap,
     pub camera: camera::Camera,
+    ui: ui::UI,
 }
 
 impl GUI {
-    pub fn new(world_map: WorldMap, camera: camera::Camera) -> Self {
+    pub fn new(world_map: WorldMap, camera: camera::Camera, ui: ui::UI) -> Self {
         Self {
             world_map,
             camera,
+            ui,
         }
     }
 
@@ -196,29 +199,56 @@ impl GUI {
         for (x, row) in self.world_map.explored_map.iter().enumerate() {
             for (z, tile) in row.iter().enumerate() {
                 if let Some(tile) = tile {
-                    let texture = match tile.tile_type {
-                        TileType::DeepWater => &water_block,
-                        TileType::ShallowWater => &water_block,
-                        TileType::Sand => &sand_block,
-                        TileType::Grass => &grass_block,
-                        TileType::Street => &street_block,
-                        TileType::Hill => &hill_block,
-                        TileType::Mountain => &mountain_block,
-                        TileType::Snow => &snow_block,
-                        TileType::Lava => &lava_block,
-                        TileType::Teleport(_) => &teleport_block,
-                        TileType::Wall => &wall_block,
+                    // let texture = match tile.tile_type {
+                    //     TileType::DeepWater => &water_block,
+                    //     TileType::ShallowWater => &water_block,
+                    //     TileType::Sand => &sand_block,
+                    //     TileType::Grass => &grass_block,
+                    //     TileType::Street => &street_block,
+                    //     TileType::Hill => &hill_block,
+                    //     TileType::Mountain => &mountain_block,
+                    //     TileType::Snow => &snow_block,
+                    //     TileType::Lava => &lava_block,
+                    //     TileType::Teleport(_) => &teleport_block,
+                    //     TileType::Wall => &wall_block,
+                    // };
+                    //self.draw_pillar((x, z), tile, texture);
+
+                    let color = match tile.tile_type {
+                        TileType::DeepWater => Color::from_hex(0x000066),
+                        TileType::ShallowWater => Color::from_hex(0x3333ff),
+                        TileType::Sand => Color::from_hex(0xffcc00),
+                        TileType::Grass => Color::from_hex(0x009933),
+                        TileType::Street => Color::from_hex(0x404040),
+                        TileType::Hill => Color::from_hex(0x669900),
+                        TileType::Mountain => Color::from_hex(0x996633),
+                        TileType::Snow => Color::from_hex(0xccffff),
+                        TileType::Lava => Color::from_hex(0xcf1020),
+                        TileType::Teleport(_) => Color::from_hex(0x66ffff),
+                        TileType::Wall => Color::from_hex(0x000000),
                     };
 
-                    self.draw_pillar((x, z), tile, texture);
-                    // draw_cube_wires(
-                    //     vec3(x as f32, tile.elevation as f32, z as f32),
-                    //     vec3(1.0, 1.0, 1.0),
-                    //     ORANGE
-                    // );
+                    draw_affine_parallelepiped(
+                        vec3(x as f32, 0.0, z as f32), //x as f32 * Vec3::X + z as f32 * Vec3::Z,
+                        1.0 * Vec3::X,
+                        (1.0 + tile.elevation as f32) * Vec3::Y,
+                        1.0 * Vec3::Z,
+                        None,
+                        color
+                    );
+                    draw_cube_wires(
+                        vec3(0.5 + x as f32, 0.5, 0.5 + z as f32),
+                        vec3(1.0, 1.0, 1.0),
+                        ORANGE
+                    );
                 }
             }
         }
+    }
+
+    pub fn draw_ui(&mut self, props: &ui::Props) {
+
+        self.ui.draw(props);
     }
 }
 
@@ -229,6 +259,7 @@ impl Default for GUI {
         Self { 
             world_map: Default::default(),
             camera: Default::default(),
+            ui: Default::default()
         }
     }
 }
