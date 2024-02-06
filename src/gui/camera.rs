@@ -109,7 +109,7 @@ impl Default for Camera {
             target: Vec3::default(),
             up: vec3(0.0, 1.0, 0.0),
             front: Vec3::default(),
-            move_speed: 1.0,
+            move_speed: 0.1,
             look_speed: 0.001,
             pitch: 0.0,
             yaw: 0.0,
