@@ -23,10 +23,10 @@ impl<'a> RobotStats<'a> {
 }
 
 pub struct ConvertedStats {
-    energy: usize, 
-    coordinates: (usize, usize),
-    backpack_contents: HashMap<Content, usize>,
-    backpack_size: usize
+    pub energy: usize, 
+    pub coordinates: (usize, usize),
+    pub backpack_contents: HashMap<Content, usize>,
+    pub backpack_size: usize
 }
 
 impl ConvertedStats {

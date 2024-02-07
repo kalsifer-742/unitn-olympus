@@ -23,7 +23,7 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     //World Generator
-    let world_size = 50;
+    let world_size = 25;
     let mut world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, true, Some(25));
 
     //Robot
@@ -55,7 +55,7 @@ async fn main() {
 
         //Game Tick
         current_time = get_time();
-        if current_time - last_time > 1.0 {
+        if current_time - last_time > 0.0 {
             game_logic.tick();
             props.update(game_logic.get_robot_stats());
 
