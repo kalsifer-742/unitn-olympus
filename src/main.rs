@@ -1,12 +1,11 @@
-use std::rc::Rc;
-use std::cell::RefCell;
-use dummy_robot::DummyRobot;
+use std::{cell::RefCell, rc::Rc};
+
 use macroquad::prelude::*;
-use olympus::gui::{GUI};
-use olympus::gui::game_logic::GameLogic;
-use rip_worldgenerator::MyWorldGen;
 use robotics_lib::runner::{Robot, Runner};
-use olympus::gui::ui::Props;
+use rip_worldgenerator::MyWorldGen;
+use olympus::visualizer::{gui::GUI, oracle::Oracle, renderer::Renderer, custom_camera::CustomCamera};
+
+use dummy_robot::DummyRobot;
 
 mod dummy_robot;
 
@@ -26,48 +25,49 @@ async fn main() {
     let world_size = 25;
     let mut world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, true, Some(25));
 
+    //Oracle
+    let oracle = Rc::new(RefCell::new(Oracle::new()));
+
     //Robot
-    //this is not acceptable to me and needs to be fixed somehow
-    let gui = Rc::new(RefCell::new(GUI::default()));
-    let robot = DummyRobot::new(Robot::default(), gui.clone());
+    let robot = Box::new(DummyRobot::new(Robot::default(), Rc::clone(&oracle)));
 
     //Game
-    let mut game_logic = GameLogic::new(
-        Runner::new(Box::new(robot), &mut world_generator).expect("Error creating runner")
-    );
+    let mut runner = Runner::new(robot, &mut world_generator).expect("errore");
     let mut last_time = 0.0;
+    #[allow(unused_assignments)]
     let mut current_time = 0.0;
 
+    //Camera
+    let mut camera = CustomCamera::default();
+
     //GUI
-    //let gui = Rc::new(RefCell::new(GUI::default()));
-    gui.borrow_mut().init(world_size);
-    let mut props = Props::new(game_logic.get_robot_stats());
+    let mut gui = GUI::default();
+    gui.init();
 
     loop {
         //Background
-        GUI::draw_background();
+        Renderer::draw_background();
 
         //Input
-        gui.borrow_mut().handle_input();
+        camera.handle_input();
         
         //Camera
-        set_camera(gui.borrow_mut().camera.get_actual_camera());
+        camera.update();
+        set_camera(camera.get_actual_camera());
 
         //Game Tick
         current_time = get_time();
-        if current_time - last_time > 0.0 {
-            game_logic.tick();
-            props.update(game_logic.get_robot_stats());
-
+        if (current_time - last_time) > 0.0 {
+            runner.game_tick().expect("Error during game tick");
             last_time = current_time;
         }
         
-        //World
-        gui.borrow().draw_world();
+        //World Render
+        Renderer::render(oracle.borrow().get_render_props());
 
-        //UI
+        //GUI
         set_default_camera();
-        gui.borrow_mut().draw_ui(&props);
+        gui.draw(oracle.borrow().get_gui_props());
 
         next_frame().await
     }
