@@ -1,49 +1,43 @@
-use std::hash;
-use std::io::Cursor;
-
-use macroquad::{prelude::*, ui};
-use macroquad::ui::widgets::Group;
+use std::collections::HashMap;
+use macroquad::prelude::*;
 use macroquad::ui::{root_ui, widgets};
 use macroquad::hash;
 use robotics_lib::world::tile::Content;
 
-use super::game_logic::ConvertedStats;
-
-pub(crate) struct UI {
+pub struct GUI {
     window_width: f32,
-    window_height: f32, 
+    window_height: f32,
 }
 
-pub struct Props {
-    stats: ConvertedStats
+pub struct GUIProps {
+    pub energy: usize,
+    pub coordinates: (usize, usize),
+    pub backpack_contents: HashMap<Content, usize>,
+    pub backpack_size: usize
 }
 
-impl Props {
-    pub fn new(stats: ConvertedStats) -> Self {
+impl Default for GUIProps {
+    fn default() -> Self {
         Self {
-            stats
+            energy: 0,
+            coordinates: (0, 0),
+            backpack_contents: HashMap::default(),
+            backpack_size: 0,
         }
     }
-
-    pub fn update(&mut self, stats: ConvertedStats) {
-        self.stats = stats;
-    }
 }
 
-impl UI {
-    fn new(window_width: f32, window_height: f32) -> Self {
-        Self {
-            window_width,
-            window_height,
-        }
+impl GUI {
+    pub fn init(&mut self) {
+        set_cursor_grab(true);
+        show_mouse(false);
     }
 
     fn map_range(x: f32, x_min: f32, x_max: f32, y_min: f32, y_max: f32) -> f32 {
         (x - x_min) * ((y_max - y_min) / (x_max - x_min)) + y_min
     }
 
-
-    pub fn draw(&mut self, props: &Props) {
+    pub fn draw(&self, props: &GUIProps) {
         draw_text(format!("FPS: {}", get_fps()).as_str(), 0., 16., 32., ORANGE);
 
         widgets::Window::new(
@@ -59,19 +53,19 @@ impl UI {
             let cursor = ui.canvas().cursor();
             ui.canvas().rect(
                 Rect::new(cursor.x, cursor.y,
-                    Self::map_range(props.stats.energy as f32, 0., 1000., 0., 100.),
+                    Self::map_range(props.energy as f32, 0., 1000., 0., 100.),
                     20.0),
                 Color::new(0.0, 0.0, 0.0, 1.0),
                 YELLOW,
             );
 
-            ui.label(None, &format!("Coordinates X: {}, Y: {}", props.stats.coordinates.0, props.stats.coordinates.1));
+            ui.label(None, &format!("Coordinates X: {}, Y: {}", props.coordinates.0, props.coordinates.1));
             
             ui.separator();
 
             widgets::Group::new(hash!("backpack"), vec2(350., 200.))
             .ui(ui, |ui| {
-                for (index, (item, amount)) in props.stats.backpack_contents.iter().enumerate() {
+                for (index, (item, amount)) in props.backpack_contents.iter().enumerate() {
                     widgets::Group::new(hash!("backpack_item", index), vec2(70., 70.))
                     .ui(ui, |ui| {
                         let item_name = match item {
@@ -101,16 +95,16 @@ impl UI {
 
             ui.separator();
 
-            ui.label(None, &format!("Backpack size: {}", props.stats.backpack_size));
+            ui.label(None, &format!("Backpack size: {}", props.backpack_size));
         });
     }
 }
 
-impl Default for UI {
+impl Default for GUI {
     fn default() -> Self {
         Self {
             window_width: 1920.0,
-            window_height: 1080.0,
+            window_height: 1080.0
         }
     }
 }
