@@ -32,7 +32,7 @@ impl DummyRobot {
 impl Runnable for DummyRobot {
     fn process_tick(&mut self, world: &mut World) {
         //view around
-        let _robot_view= robot_view(self, world);
+        let _robot_view = robot_view(self, world);
         //get explored world
         let explored_world_map = robot_map(world).expect("Problem calling robot_map (probably Mutex problems)");
 
@@ -46,6 +46,7 @@ impl Runnable for DummyRobot {
             backpack_contents: self.get_backpack().get_contents().clone(),
             backpack_size: self.get_backpack().get_size(),
         };
+        //generate props for the user ?
         self.oracle.borrow_mut().update_props(r_props, g_props);
 
         //move around
@@ -60,7 +61,9 @@ impl Runnable for DummyRobot {
         match event {
             Event::Ready => {}
             Event::Terminated => {}
-            Event::TimeChanged(_) => {}
+            Event::TimeChanged(_weather) => {
+                //self.oracle.borrow_mut().update_weather();
+            }
             Event::DayChanged(_) => {}
             Event::EnergyRecharged(_) => {}
             Event::EnergyConsumed(_) => {}

@@ -1,9 +1,56 @@
 use macroquad::prelude::*;
 use robotics_lib::world::tile::{Tile, TileType};
 
+struct Textures {
+    sky: Texture2D,
+    water_block: Texture2D,
+    sand_block: Texture2D,
+    grass_block: Texture2D,
+    street_block: Texture2D,
+    hill_block: Texture2D,
+    mountain_block: Texture2D,
+    snow_block: Texture2D,
+    lava_block: Texture2D,
+    teleport_block: Texture2D,
+    wall_block: Texture2D
+}
+
+impl Textures {
+    fn init(&self) {
+        self.water_block.set_filter(FilterMode::Nearest);
+        self.sand_block.set_filter(FilterMode::Nearest);
+        self.grass_block.set_filter(FilterMode::Nearest);
+        self.street_block.set_filter(FilterMode::Nearest);
+        self.hill_block.set_filter(FilterMode::Nearest);
+        self.mountain_block.set_filter(FilterMode::Nearest);
+        self.snow_block.set_filter(FilterMode::Nearest);
+        self.lava_block.set_filter(FilterMode::Nearest);
+        self.teleport_block.set_filter(FilterMode::Nearest);
+        self.wall_block.set_filter(FilterMode::Nearest);
+    }
+}
+
+impl Default for Textures {
+    fn default() -> Self {
+        Self {
+            sky: Texture2D::from_file_with_format(include_bytes!("../../assets/day_sky.png"), Some(ImageFormat::Png)),
+            water_block: Texture2D::from_file_with_format(include_bytes!("../../assets/underwater_opaque.png"), Some(ImageFormat::Png)),
+            sand_block: Texture2D::from_file_with_format(include_bytes!("../../assets/sand.png"), Some(ImageFormat::Png)),
+            grass_block: Texture2D::from_file_with_format(include_bytes!("../../assets/green_concrete_powder.png"),Some(ImageFormat::Png)),
+            street_block: Texture2D::from_file_with_format(include_bytes!("../../assets/dirt_path_top.png"), Some(ImageFormat::Png)),
+            hill_block: Texture2D::from_file_with_format(include_bytes!("../../assets/dirt.png"), Some(ImageFormat::Png)),
+            mountain_block: Texture2D::from_file_with_format(include_bytes!("../../assets/stone.png"), Some(ImageFormat::Png)),
+            snow_block: Texture2D::from_file_with_format(include_bytes!("../../assets/snow.png"), Some(ImageFormat::Png)),
+            lava_block: Texture2D::from_file_with_format(include_bytes!("../../assets/lava.png"), Some(ImageFormat::Png)),
+            teleport_block: Texture2D::from_file_with_format(include_bytes!("../../assets/end_portal.png"), Some(ImageFormat::Png)),
+            wall_block: Texture2D::from_file_with_format(include_bytes!("../../assets/cobblestone.png"), Some(ImageFormat::Png)),
+        }
+    }
+}
+
 pub struct Renderer {
-    // world_map: Vec<Vec<Tile>>,
     world_map_size: usize,
+    textures: Textures
 }
 
 pub struct RendererProps {
@@ -19,15 +66,25 @@ impl Default for RendererProps {
 }
 
 impl Renderer {
-    pub fn new(world_map_size: usize) -> Self {
+    pub fn new(world_map_size: usize) -> Self {        
+        let textures = Textures::default();
+        textures.init();
+        
         Self {
-            // world_map,
-            world_map_size
+            world_map_size,
+            textures
         }
     }
 
-    pub fn draw_background() {
+    pub fn draw_background(&self) {
         clear_background(LIGHTGRAY);
+
+        draw_sphere(
+            vec3(self.world_map_size as f32 / 2.0, 0.0, self.world_map_size as f32 / 2.0), 
+            self.world_map_size as f32 * 2.0, 
+            Some(&self.textures.sky),
+            WHITE,
+        );
     }
 
     fn draw_grid(slices: u32, spacing: f32, axes_color: Color, other_color: Color) {
@@ -49,83 +106,32 @@ impl Renderer {
         }
     }
 
-    fn render_explored_map(props: &RendererProps) {
-        let water_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/underwater_opaque.png"), 
-            Some(ImageFormat::Png)
-        );
-        let sand_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/sand.png"), 
-            Some(ImageFormat::Png)
-        );
-        let grass_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/green_concrete_powder.png"),
-            Some(ImageFormat::Png)
-        );
-        let street_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/dirt_path_top.png"), 
-            Some(ImageFormat::Png)
-        );
-        let hill_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/dirt.png"), 
-            Some(ImageFormat::Png)
-        );
-        let mountain_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/stone.png"), 
-            Some(ImageFormat::Png)
-        );
-        let snow_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/snow.png"), 
-            Some(ImageFormat::Png)
-        );
-        let lava_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/lava.png"),
-            Some(ImageFormat::Png)
-        );
-        let teleport_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/end_portal.png"), 
-            Some(ImageFormat::Png)
-        );
-        let wall_block = Texture2D::from_file_with_format(
-            include_bytes!("../../assets/cobblestone.png"), 
-            Some(ImageFormat::Png)
-        );
-
-        water_block.set_filter(FilterMode::Nearest);
-        sand_block.set_filter(FilterMode::Nearest);
-        grass_block.set_filter(FilterMode::Nearest);
-        street_block.set_filter(FilterMode::Nearest);
-        hill_block.set_filter(FilterMode::Nearest);
-        mountain_block.set_filter(FilterMode::Nearest);
-        snow_block.set_filter(FilterMode::Nearest);
-        lava_block.set_filter(FilterMode::Nearest);
-        teleport_block.set_filter(FilterMode::Nearest);
-        wall_block.set_filter(FilterMode::Nearest);
-        
+    fn render_explored_map(&self, props: &RendererProps) {                
         for (x, row) in props.explored_world_map.iter().enumerate() {
             for (z, tile) in row.iter().enumerate() {
                 if let Some(tile) = tile {
+                    let mut color = WHITE;
                     let texture = match tile.tile_type {
-                        TileType::DeepWater => &water_block,
-                        TileType::ShallowWater => &water_block,
-                        TileType::Sand => &sand_block,
-                        TileType::Grass => &grass_block,
-                        TileType::Street => &street_block,
-                        TileType::Hill => &hill_block,
-                        TileType::Mountain => &mountain_block,
-                        TileType::Snow => &snow_block,
-                        TileType::Lava => &lava_block,
-                        TileType::Teleport(_) => &teleport_block,
-                        TileType::Wall => &wall_block,
+                        TileType::DeepWater => { color = GRAY; &self.textures.water_block }
+                        TileType::ShallowWater => &self.textures.water_block,
+                        TileType::Sand => &self.textures.sand_block,
+                        TileType::Grass => &self.textures.grass_block,
+                        TileType::Street => &self.textures.street_block,
+                        TileType::Hill => &self.textures.hill_block,
+                        TileType::Mountain => &self.textures.mountain_block,
+                        TileType::Snow => &self.textures.snow_block,
+                        TileType::Lava => &self.textures.lava_block,
+                        TileType::Teleport(_) => &self.textures.teleport_block,
+                        TileType::Wall => &self.textures.wall_block,
                     };
-    
+                    
                     draw_affine_parallelepiped(
                         vec3(x as f32, 0.0, z as f32), //x as f32 * Vec3::X + z as f32 * Vec3::Z,
                         1.0 * Vec3::X,
                         (1.0 + tile.elevation as f32) * Vec3::Y,
                         1.0 * Vec3::Z,
                         Some(texture),
-                        WHITE
+                        color
                     );
                 }
             }
@@ -134,6 +140,6 @@ impl Renderer {
 
     pub fn render(&self, props: &RendererProps) {
         Self::draw_grid(self.world_map_size as u32, 1.0, BLACK, GRAY);
-        Self::render_explored_map(props);
+        self.render_explored_map(props);
     }
 }

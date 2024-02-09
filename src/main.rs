@@ -1,7 +1,7 @@
 use std::{cell::RefCell, rc::Rc};
 
 use macroquad::prelude::*;
-use robotics_lib::{runner::{Robot, Runner}, world::world_generator::Generator};
+use robotics_lib::runner::{Robot, Runner};
 use rip_worldgenerator::MyWorldGen;
 use olympus::visualizer::{custom_camera::CustomCamera, gui::GUI, oracle::Oracle, renderer::Renderer};
 
@@ -22,7 +22,7 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     //World Generator
-    let world_size = 50;
+    let world_size = 200;
     let mut world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
     // let world_copy = world_generator.gen();
 
@@ -49,11 +49,9 @@ async fn main() {
     gui.init();
 
     loop {
-        //Background
-        Renderer::draw_background();
-
         //Input
         camera.handle_input();
+        gui.handle_input();
         
         //Camera
         camera.update();
@@ -67,6 +65,7 @@ async fn main() {
         }
         
         //World Render
+        renderer.draw_background();
         renderer.render(oracle.borrow().get_render_props());
 
         //GUI
