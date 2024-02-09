@@ -34,13 +34,11 @@ impl Runnable for DummyRobot {
         //view around
         let _robot_view= robot_view(self, world);
         //get explored world
-        let world_map = robot_map(world).expect("Problem calling robot_map (probably Mutex problems)");
-        let world_map_size = world_map.len();
+        let explored_world_map = robot_map(world).expect("Problem calling robot_map (probably Mutex problems)");
 
         //Renderer & GUI
         let r_props = RendererProps {
-            world_map,
-            world_map_size
+            explored_world_map,
         };
         let g_props = GUIProps {
             energy: self.get_energy().get_energy_level(),

@@ -1,9 +1,9 @@
 use std::{cell::RefCell, rc::Rc};
 
 use macroquad::prelude::*;
-use robotics_lib::runner::{Robot, Runner};
+use robotics_lib::{runner::{Robot, Runner}, world::world_generator::Generator};
 use rip_worldgenerator::MyWorldGen;
-use olympus::visualizer::{gui::GUI, oracle::Oracle, renderer::Renderer, custom_camera::CustomCamera};
+use olympus::visualizer::{custom_camera::CustomCamera, gui::GUI, oracle::Oracle, renderer::Renderer};
 
 use dummy_robot::DummyRobot;
 
@@ -22,8 +22,9 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     //World Generator
-    let world_size = 25;
-    let mut world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, true, Some(25));
+    let world_size = 50;
+    let mut world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
+    // let world_copy = world_generator.gen();
 
     //Oracle
     let oracle = Rc::new(RefCell::new(Oracle::new()));
@@ -39,6 +40,9 @@ async fn main() {
 
     //Camera
     let mut camera = CustomCamera::default();
+
+    //Renderer
+    let renderer = Renderer::new(world_size);
 
     //GUI
     let mut gui = GUI::default();
@@ -63,7 +67,7 @@ async fn main() {
         }
         
         //World Render
-        Renderer::render(oracle.borrow().get_render_props());
+        renderer.render(oracle.borrow().get_render_props());
 
         //GUI
         set_default_camera();
