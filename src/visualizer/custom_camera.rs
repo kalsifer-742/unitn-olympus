@@ -1,5 +1,6 @@
-use macroquad::input::{KeyCode, mouse_position, is_key_down};
+use macroquad::input::{mouse_position, is_key_down};
 use macroquad::{camera::Camera3D, math::{vec3, Vec2, Vec3}};
+use crate::visualizer::controls::KeyboardControls;
 
 pub struct CustomCamera {
     actual_camera: Camera3D,
@@ -11,6 +12,7 @@ pub struct CustomCamera {
     pitch: f32,
     yaw: f32,
     mouse_position: Vec2,
+    keyboard_controls: KeyboardControls
 }
 
 pub enum Direction {
@@ -23,31 +25,6 @@ pub enum Direction {
 }
 
 impl CustomCamera {
-    pub fn new(
-        actual_camera: Camera3D,
-        front: Vec3,
-        move_speed: f32,
-        look_speed: f32,
-        pitch: f32,
-        yaw: f32,
-        mouse_position: Vec2
-    ) -> Self {
-        let position = actual_camera.position;
-        let up = actual_camera.up;
-        
-        Self {
-            actual_camera,
-            position,
-            up,
-            front,
-            move_speed,
-            look_speed,
-            pitch,
-            yaw,
-            mouse_position,
-        }
-    }
-
     pub fn get_actual_camera(&self) -> &Camera3D {
         &self.actual_camera
     }
@@ -88,27 +65,27 @@ impl CustomCamera {
         //self.up = Vec3::new(0,1,0);//right.cross(front).normalize();
 
         self.actual_camera.position = self.position;
-        //self.actual_camera.up = self.up;
+        self.actual_camera.up = self.up;
         self.actual_camera.target = self.position + self.front;
     }
 
     fn handle_keys(&mut self) {
-        if is_key_down(KeyCode::W) {
+        if is_key_down(self.keyboard_controls.move_forward) {
             self.update_position(Direction::Forward);
         }
-        if is_key_down(KeyCode::S) {
+        if is_key_down(self.keyboard_controls.move_backward) {
             self.update_position(Direction::Backward);
         }
-        if is_key_down(KeyCode::A) {
+        if is_key_down(self.keyboard_controls.move_left) {
             self.update_position(Direction::Left);
         }
-        if is_key_down(KeyCode::D) {
+        if is_key_down(self.keyboard_controls.move_right) {
             self.update_position(Direction::Right);
         }
-        if is_key_down(KeyCode::Space) {
+        if is_key_down(self.keyboard_controls.move_up) {
             self.update_position(Direction::Up);
         }
-        if is_key_down(KeyCode::LeftShift) {
+        if is_key_down(self.keyboard_controls.move_down) {
             self.update_position(Direction::Down);
         }
     }
@@ -126,20 +103,16 @@ impl CustomCamera {
 impl Default for CustomCamera {
     fn default() -> Self {
         Self {
-            actual_camera: Camera3D {
-                position: vec3(-12.0, 10.0, 0.0),
-                target: vec3(0.0, 0.0, 0.0),
-                up: vec3(0.0, 1.0, 0.0),
-                ..Default::default()
-            },
-            position: Vec3::default(),
+            actual_camera: Default::default(),
+            position: vec3(-10.0, 100.0, -10.0),
             up: vec3(0.0, 1.0, 0.0),
-            front: Vec3::default(),
+            front: Default::default(),
             move_speed: 0.5,
             look_speed: 0.001,
             pitch: 0.0,
             yaw: 0.0,
-            mouse_position: Vec2::default(),
+            mouse_position: Default::default(),
+            keyboard_controls: Default::default(),
         }
     }
 }

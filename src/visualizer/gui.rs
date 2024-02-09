@@ -1,12 +1,18 @@
 use std::collections::HashMap;
 use macroquad::prelude::*;
+use macroquad::telemetry::textures_count;
 use macroquad::ui::{root_ui, widgets};
 use macroquad::hash;
 use robotics_lib::world::tile::Content;
+use crate::visualizer::controls::KeyboardControls;
 
 pub struct GUI {
-    window_width: f32,
-    window_height: f32,
+    viewport_width: f32,
+    viewport_height: f32,
+    window_size: f32,
+    keyboard_controls: KeyboardControls,
+    show_help: bool,
+    show_stats: bool
 }
 
 pub struct GUIProps {
@@ -33,16 +39,23 @@ impl GUI {
         show_mouse(false);
     }
 
+    pub fn handle_input(&mut self) {
+        if is_key_pressed(self.keyboard_controls.toggle_help) {
+            self.show_help = !self.show_help;
+        }
+        if is_key_pressed(self.keyboard_controls.toggle_statistics) {
+            self.show_stats = !self.show_stats;
+        }
+    }
+
     fn map_range(x: f32, x_min: f32, x_max: f32, y_min: f32, y_max: f32) -> f32 {
         (x - x_min) * ((y_max - y_min) / (x_max - x_min)) + y_min
     }
 
-    pub fn draw(&self, props: &GUIProps) {
-        draw_text(format!("FPS: {}", get_fps()).as_str(), 0., 16., 32., ORANGE);
-
+    fn draw_robot_info(&self, props: &GUIProps) {
         widgets::Window::new(
-            hash!(),
-            vec2(self.window_width as f32 - 400., 0.),
+            hash!("robot_info"),
+            vec2(self.viewport_width - self.window_size, 0.),
             vec2(400., 400.)
         )
         .label("Robot")
@@ -98,13 +111,55 @@ impl GUI {
             ui.label(None, &format!("Backpack size: {}", props.backpack_size));
         });
     }
+
+    fn draw_stats(&self) {
+        widgets::Window::new(
+            hash!("stats"), 
+            vec2(0.0, 0.0), 
+            vec2(self.window_size, self.window_size)
+        )
+        .label("Statistics")
+        .titlebar(true)
+        .ui(&mut *root_ui(), |ui| {
+            ui.label(None, &format!("FPS: {}", get_fps()));
+            ui.label(None, &format!("Texture count: {}", textures_count()));
+        });
+    }
+
+    fn draw_help(&self) {
+        widgets::Window::new(
+            hash!("help"), 
+            vec2(0.0, self.viewport_height - self.window_size),
+            vec2(self.window_size, self.window_size)
+        )
+        .label("Help")
+        .titlebar(true)
+        .ui(&mut *root_ui(), |ui| {
+            ui.label(None, &format!("Toggle statistics window: F3"));
+        });
+    }
+
+    pub fn draw(&self, props: &GUIProps) {
+        self.draw_robot_info(props);
+        
+        if self.show_stats {
+            self.draw_stats();
+        }
+        if self.show_help {
+            self.draw_help();
+        }
+    }
 }
 
 impl Default for GUI {
     fn default() -> Self {
         Self {
-            window_width: 1920.0,
-            window_height: 1080.0
+            viewport_width: 1920.0,
+            viewport_height: 1080.0,
+            window_size: 400.0,
+            keyboard_controls: Default::default(),
+            show_help: false,
+            show_stats: false
         }
     }
 }
