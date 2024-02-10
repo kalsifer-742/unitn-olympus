@@ -31,8 +31,13 @@ impl DummyRobot {
 
 impl Runnable for DummyRobot {
     fn process_tick(&mut self, world: &mut World) {
-        //view around
-        let _robot_view = robot_view(self, world);
+        // move and view around
+        let directions = vec![Direction::Left, Direction::Right, Direction::Up, Direction::Down];
+        // go inside calls robot_view
+        if go(self, world, directions.choose().unwrap().clone()).is_err() {
+            return;
+        }
+
         //get explored world
         let explored_world_map = robot_map(world).expect("Problem calling robot_map (probably Mutex problems)");
 
@@ -48,12 +53,6 @@ impl Runnable for DummyRobot {
         };
         //generate props for the user ?
         self.oracle.borrow_mut().update_props(r_props, g_props);
-
-        //move around
-        let directions = vec![Direction::Left, Direction::Right, Direction::Up, Direction::Down];
-        if go(self, world, directions.choose().unwrap().clone()).is_err() {
-            return;
-        }
     }
 
     fn handle_event(&mut self, event: Event) {
@@ -67,7 +66,12 @@ impl Runnable for DummyRobot {
             Event::DayChanged(_) => {}
             Event::EnergyRecharged(_) => {}
             Event::EnergyConsumed(_) => {}
-            Event::Moved(_tile, (_x, _y)) => {}
+            Event::Moved(_tile, (_x, _y)) => {
+                // the event contains only the tile on which the robot is
+                // not useful because there is no way to get the explored tiles
+                // robot_view() gives a 3x3 matrix
+                // inside this function i do not have acces to the world 
+            }
             Event::TileContentUpdated(_, _) => {}
             Event::AddedToBackpack(_, _) => {}
             Event::RemovedFromBackpack(_, _) => {}
