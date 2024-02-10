@@ -3,10 +3,12 @@ use std::{cell::RefCell, rc::Rc};
 use macroquad::prelude::*;
 use robotics_lib::runner::{Robot, Runner};
 use rip_worldgenerator::MyWorldGen;
-use olympus::visualizer::{custom_camera::CustomCamera, gui::GUI, oracle::Oracle, renderer::Renderer};
+use olympus::visualizer::{oracle::Oracle, Visualizer};
 
+use runner_wrapper::RunnerWrapper;
 use dummy_robot::DummyRobot;
 
+mod runner_wrapper;
 mod dummy_robot;
 
 fn window_conf() -> Conf {
@@ -21,56 +23,31 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    //World Generator
+    // World Generator
     let world_size = 200;
     let mut world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
-    // let world_copy = world_generator.gen();
-
-    //Oracle
-    let oracle = Rc::new(RefCell::new(Oracle::new()));
-
-    //Robot
+    // Oracle
+    let oracle = Rc::new(RefCell::new(Oracle::default()));
+    // Robot
     let robot = Box::new(DummyRobot::new(Robot::default(), Rc::clone(&oracle)));
-
-    //Game
-    let mut runner = Runner::new(robot, &mut world_generator).expect("errore");
-    let mut last_time = 0.0;
-    #[allow(unused_assignments)]
-    let mut current_time = 0.0;
-
-    //Camera
-    let mut camera = CustomCamera::default();
-
-    //Renderer
-    let renderer = Renderer::new(world_size);
-
-    //GUI
-    let mut gui = GUI::default();
-    gui.init();
+    // Game
+    let mut game = RunnerWrapper::new(robot, &mut world_generator, 0.2);
+    // Visualizer
+    let mut visualizer = Visualizer::new(world_size);
+    visualizer.init();
 
     loop {
         //Input
-        camera.handle_input();
-        gui.handle_input();
-        
-        //Camera
-        camera.update();
-        set_camera(camera.get_actual_camera());
-
-        //Game Tick
-        current_time = get_time();
-        if (current_time - last_time) > 0.0 {
-            runner.game_tick().expect("Error during game tick");
-            last_time = current_time;
+        visualizer.handle_input();
+        if visualizer.gui.exit() {
+            break;
         }
+    
+        //Game
+        game.tick();
         
-        //World Render
-        renderer.draw_background();
-        renderer.render(oracle.borrow().get_render_props());
-
-        //GUI
-        set_default_camera();
-        gui.draw(oracle.borrow().get_gui_props());
+        //Visualizer
+        visualizer.show(oracle.borrow().get_props());
 
         next_frame().await
     }

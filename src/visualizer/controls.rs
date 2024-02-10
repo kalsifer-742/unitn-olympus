@@ -1,6 +1,8 @@
 use macroquad::input::KeyCode;
 
 pub struct KeyboardControls {
+    pub exit: KeyCode,
+    pub toggle_free_mouse: KeyCode,
     pub move_forward: KeyCode,
     pub move_backward: KeyCode,
     pub move_left: KeyCode,
@@ -14,6 +16,8 @@ pub struct KeyboardControls {
 impl Default for KeyboardControls {
     fn default() -> Self {
         Self {
+            exit: KeyCode::Escape,
+            toggle_free_mouse: KeyCode::J,
             move_forward: KeyCode::W,
             move_backward: KeyCode::S,
             move_left: KeyCode::A,

@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use robotics_lib::energy::Energy;
 use robotics_lib::event::events::Event;
-use robotics_lib::interface::{Direction, go, robot_map, robot_view};
+use robotics_lib::interface::{go, Direction};
 use robotics_lib::runner::backpack::BackPack;
 use robotics_lib::runner::{Robot, Runnable};
 use robotics_lib::world::coordinates::Coordinate;
@@ -12,8 +12,6 @@ use robotics_lib::world::World;
 use macroquad::rand::ChooseRandom;
 
 use olympus::visualizer::oracle::Oracle;
-use olympus::visualizer::renderer::RendererProps;
-use olympus::visualizer::gui::GUIProps;
 
 pub struct DummyRobot{
     robot: Robot,
@@ -38,21 +36,7 @@ impl Runnable for DummyRobot {
             return;
         }
 
-        //get explored world
-        let explored_world_map = robot_map(world).expect("Problem calling robot_map (probably Mutex problems)");
-
-        //Renderer & GUI
-        let r_props = RendererProps {
-            explored_world_map,
-        };
-        let g_props = GUIProps {
-            energy: self.get_energy().get_energy_level(),
-            coordinates: (self.get_coordinate().get_row(), self.get_coordinate().get_col()),
-            backpack_contents: self.get_backpack().get_contents().clone(),
-            backpack_size: self.get_backpack().get_size(),
-        };
-        //generate props for the user ?
-        self.oracle.borrow_mut().update_props(r_props, g_props);
+        self.oracle.borrow_mut().update_props(self, world);
     }
 
     fn handle_event(&mut self, event: Event) {
@@ -60,8 +44,8 @@ impl Runnable for DummyRobot {
         match event {
             Event::Ready => {}
             Event::Terminated => {}
-            Event::TimeChanged(_weather) => {
-                //self.oracle.borrow_mut().update_weather();
+            Event::TimeChanged(weather) => {
+                self.oracle.borrow_mut().update_weather(weather);
             }
             Event::DayChanged(_) => {}
             Event::EnergyRecharged(_) => {}
