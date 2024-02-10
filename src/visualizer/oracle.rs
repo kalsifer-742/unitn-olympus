@@ -1,7 +1,11 @@
-use crate::visualizer::renderer::RendererProps;
-use crate::visualizer::gui::GUIProps;
+use robotics_lib::interface::{get_score, robot_map};
+use robotics_lib::runner::Runnable;
+use robotics_lib::world::environmental_conditions::EnvironmentalConditions;
+use robotics_lib::world::World;
 
-// Impossible because i cannot change the definition of runner
+use crate::visualizer::VisualizerProps;
+
+// Impossible because I cannot change the definition of runner
 // so that the robot implements a specific trait
 // self.runner.get_robot().offering_to_the_gods();
 
@@ -19,36 +23,33 @@ use crate::visualizer::gui::GUIProps;
 // }
 
 pub struct Oracle {
-    renderer_props: RendererProps,
-    gui_props: GUIProps
+    props: VisualizerProps
 }
 
 impl Oracle {
-    pub fn new() -> Self {
+    pub fn get_props(&self) -> &VisualizerProps {
+        &self.props
+    }
+
+    pub fn update_props(&mut self, robot: & impl Runnable, world: &mut World) {
+        self.props.explored_world_map = robot_map(world).expect("Problem calling robot_map (probably Mutex problems)");
+        self.props.robot_coordinates = (robot.get_coordinate().get_row(), robot.get_coordinate().get_col());
+        self.props.robot_energy = robot.get_energy().get_energy_level();
+        self.props.robot_backpack_contents = robot.get_backpack().get_contents().clone();
+        self.props.robot_backpack_size = robot.get_backpack().get_size();
+        self.props.discoverable_tiles = world.get_discoverable();
+        self.props.robot_score = get_score(world);
+    }
+
+    pub fn update_weather(&mut self, weather: EnvironmentalConditions) {
+        self.props.weather = weather;
+    }
+}
+
+impl Default for Oracle {
+    fn default() -> Self {
         Self {
-            renderer_props: Default::default(),
-            gui_props: Default::default()
+            props: Default::default()
         }
-    }
-
-    pub fn update_renderer_props(&mut self, props: RendererProps) {
-        self.renderer_props = props;
-    }
-
-    pub fn update_gui_props(&mut self, props: GUIProps) {
-        self.gui_props = props;
-    }
-
-    pub fn get_render_props(&self) -> &RendererProps {
-        &self.renderer_props
-    }
-
-    pub fn get_gui_props(&self) -> &GUIProps {
-        &self.gui_props
-    }
-
-    pub fn update_props(&mut self, r_props: RendererProps, g_props: GUIProps) {
-        self.update_renderer_props(r_props);
-        self.update_gui_props(g_props);
     }
 }

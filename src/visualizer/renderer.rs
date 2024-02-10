@@ -1,7 +1,10 @@
+use std::vec;
+
 use macroquad::prelude::*;
 use robotics_lib::world::tile::{Tile, TileType};
 
 struct Textures {
+    robot: Texture2D,
     sky: Texture2D,
     water_block: Texture2D,
     sand_block: Texture2D,
@@ -17,6 +20,7 @@ struct Textures {
 
 impl Textures {
     fn init(&self) {
+        self.robot.set_filter(FilterMode::Nearest);
         self.water_block.set_filter(FilterMode::Nearest);
         self.sand_block.set_filter(FilterMode::Nearest);
         self.grass_block.set_filter(FilterMode::Nearest);
@@ -33,6 +37,7 @@ impl Textures {
 impl Default for Textures {
     fn default() -> Self {
         Self {
+            robot: Texture2D::from_file_with_format(include_bytes!("../../assets/creeper.png"), Some(ImageFormat::Png)),
             sky: Texture2D::from_file_with_format(include_bytes!("../../assets/day_sky.png"), Some(ImageFormat::Png)),
             water_block: Texture2D::from_file_with_format(include_bytes!("../../assets/underwater_opaque.png"), Some(ImageFormat::Png)),
             sand_block: Texture2D::from_file_with_format(include_bytes!("../../assets/sand.png"), Some(ImageFormat::Png)),
@@ -55,12 +60,14 @@ pub struct Renderer {
 
 pub struct RendererProps {
     pub explored_world_map: Vec<Vec<Option<Tile>>>,
+    pub robot_coordinates: (usize, usize),
 }
 
 impl Default for RendererProps {
     fn default() -> Self {
         Self {
             explored_world_map: vec![vec![None]],
+            robot_coordinates: (0, 0)
         }
     }
 }
@@ -87,7 +94,9 @@ impl Renderer {
         );
     }
 
-    fn draw_grid(slices: u32, spacing: f32, axes_color: Color, other_color: Color) {
+    fn draw_grid(&self, spacing: f32, axes_color: Color, other_color: Color) {
+        let slices = self.world_map_size as u32;
+        
         for i in 0..slices + 1 {
             let color = if i == 0 { axes_color } else { other_color };
             
@@ -128,7 +137,7 @@ impl Renderer {
                     draw_affine_parallelepiped(
                         vec3(x as f32, 0.0, z as f32), //x as f32 * Vec3::X + z as f32 * Vec3::Z,
                         1.0 * Vec3::X,
-                        (1.0 + tile.elevation as f32) * Vec3::Y,
+                        (tile.elevation as f32) * Vec3::Y,
                         1.0 * Vec3::Z,
                         Some(texture),
                         color
@@ -138,8 +147,29 @@ impl Renderer {
         }
     }
 
+    fn render_robot(&self, props: &RendererProps) {
+        let offset = 0.5;
+        let (x, z) = props.robot_coordinates;
+        
+        if let Some(tile) = &props.explored_world_map[x][z] {
+            draw_line_3d(
+                vec3(offset + x as f32, self.world_map_size as f32, offset + z as f32),
+                vec3(offset + x as f32, tile.elevation as f32, offset + z as f32),
+                GREEN
+            );
+            draw_cube(
+                vec3(offset + x as f32, offset + tile.elevation as f32, offset + z as f32),
+                vec3(1.0, 1.0, 1.0),
+                Some(&self.textures.robot),
+                WHITE
+            );
+        }
+    }
+
     pub fn render(&self, props: &RendererProps) {
-        Self::draw_grid(self.world_map_size as u32, 1.0, BLACK, GRAY);
+        self.draw_background();
+        self.draw_grid(1.0, BLACK, GRAY);
         self.render_explored_map(props);
+        self.render_robot(props);
     }
 }
