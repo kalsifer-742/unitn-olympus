@@ -1,13 +1,15 @@
 use std::{cell::RefCell, rc::Rc};
 
 use macroquad::prelude::*;
-use robotics_lib::runner::{Robot, Runner};
+use oracle::Oracle;
+use robotics_lib::runner::Robot;
 use rip_worldgenerator::MyWorldGen;
-use olympus::visualizer::{oracle::Oracle, Visualizer};
+use olympus::visualizer::{Visualizer};
 
 use runner_wrapper::RunnerWrapper;
 use dummy_robot::DummyRobot;
 
+mod oracle;
 mod runner_wrapper;
 mod dummy_robot;
 
@@ -27,11 +29,11 @@ async fn main() {
     let world_size = 200;
     let mut world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
     // Oracle
-    let oracle = Rc::new(RefCell::new(Oracle::new()));
+    let oracle = Rc::new(RefCell::new(Oracle::default()));
     // Robot
     let robot = Box::new(DummyRobot::new(Robot::default(), Rc::clone(&oracle)));
     // Game
-    let mut game: RunnerWrapper = RunnerWrapper::new(robot, &mut world_generator, 0.2, Rc::clone(&oracle));
+    let mut game: RunnerWrapper = RunnerWrapper::new(robot, &mut world_generator);
     // Visualizer
     let mut visualizer = Visualizer::new(world_size);
     visualizer.init();
@@ -42,9 +44,10 @@ async fn main() {
         if visualizer.gui.exit() {
             break;
         }
-    
+        
+        let tick_time = oracle.borrow().get_tick_time(); //strange runtime error
         //Game
-        game.tick();
+        game.tick(tick_time);
         
         //Visualizer
         visualizer.show(oracle.borrow().get_props());

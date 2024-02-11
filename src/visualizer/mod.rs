@@ -1,17 +1,15 @@
-pub mod oracle;
+use std::collections::HashMap;
+
+use macroquad::prelude::*;
+use robotics_lib::world::{environmental_conditions::{DayTime, WeatherType}, tile::{Content, Tile}};
+use custom_camera::CustomCamera;
+use renderer::{Renderer, RendererProps};
+use gui::{GUI, GUIProps};
+
 mod controls;
 mod renderer;
 mod custom_camera;
 mod gui;
-
-use std::collections::HashMap;
-
-use macroquad::prelude::*;
-use renderer::{Renderer, RendererProps};
-use gui::{GUI, GUIProps};
-use robotics_lib::world::{environmental_conditions::{EnvironmentalConditions, WeatherType}, tile::{Content, Tile}};
-
-use custom_camera::CustomCamera;
 
 pub struct VisualizerProps {
     pub explored_world_map: Vec<Vec<Option<Tile>>>,
@@ -21,7 +19,9 @@ pub struct VisualizerProps {
     pub robot_backpack_size: usize,
     pub discoverable_tiles: usize,
     pub robot_score: f32,
-    pub weather: EnvironmentalConditions
+    pub time_of_day: DayTime,
+    pub time_of_day_string: String,
+    pub weather_condition: WeatherType,
 }
 
 impl Default for VisualizerProps {
@@ -34,11 +34,9 @@ impl Default for VisualizerProps {
             robot_backpack_size: 0,
             discoverable_tiles: usize::MAX,
             robot_score: 0.0,
-            weather: EnvironmentalConditions::new(
-                &vec![WeatherType::Sunny],
-                0,
-                0
-            ).unwrap(),
+            time_of_day: DayTime::Morning,
+            time_of_day_string: "00:00".to_string(),
+            weather_condition: WeatherType::Sunny,
         }
     }
 }
@@ -67,18 +65,19 @@ impl Visualizer {
         self.gui.handle_input();
     }
 
+    fn update_camera(&mut self) {
+        self.camera.update();
+        set_camera(self.camera.get_actual_camera());
+    }
+
     fn render_world(&self, props: &VisualizerProps) {
         self.renderer.render(
             &RendererProps { 
                 explored_world_map: props.explored_world_map.clone(),
-                robot_coordinates: props.robot_coordinates 
+                robot_coordinates: props.robot_coordinates,
+                time_of_day: props.time_of_day
             }
         );
-    }
-
-    fn update_camera(&mut self) {
-        self.camera.update();
-        set_camera(self.camera.get_actual_camera());
     }
 
     fn show_gui(&mut self, props: &VisualizerProps) {
@@ -91,6 +90,9 @@ impl Visualizer {
                 robot_backpack_size: props.robot_backpack_size,
                 discoverable_tiles: props.discoverable_tiles,
                 robot_score: props.robot_score,
+                time_of_day: props.time_of_day,
+                time_of_day_string: props.time_of_day_string.clone(),
+                weather_condition: props.weather_condition
             }
         );
     }
