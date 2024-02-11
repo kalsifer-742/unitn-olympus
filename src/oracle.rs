@@ -24,7 +24,6 @@ use olympus::visualizer::VisualizerProps;
 
 pub struct Oracle {
     props: VisualizerProps,
-    tick_time: f64
 }
 
 impl Oracle {
@@ -47,26 +46,12 @@ impl Oracle {
         self.props.time_of_day_string = weather.get_time_of_day_string();
         self.props.weather_condition = weather.get_weather_condition();
     }
-
-    pub fn get_tick_time(&self) -> f64 {
-        self.tick_time
-    }
-
-    pub fn change_tick_time(&mut self, tick_time: f64) -> Result<f64, String>{
-        if tick_time > 0.0 {
-            self.tick_time = tick_time;
-            Ok(self.tick_time)
-        } else {
-            Err("tick_time bust be greater than 0.0".to_string())
-        }
-    }
 }
 
 impl Default for Oracle {
     fn default() -> Self {
         Self {
             props: Default::default(),
-            tick_time: 0.5,
         }
     }
 }

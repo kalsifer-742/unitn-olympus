@@ -45,12 +45,11 @@ async fn main() {
             break;
         }
         
-        let tick_time = oracle.borrow().get_tick_time(); //strange runtime error
         //Game
-        game.tick(tick_time);
+        game.tick();
         
         //Visualizer
-        visualizer.show(oracle.borrow().get_props());
+        visualizer.show(oracle.borrow().get_props(), game.get_tick_time());
 
         next_frame().await
     }

@@ -80,7 +80,7 @@ impl Visualizer {
         );
     }
 
-    fn show_gui(&mut self, props: &VisualizerProps) {
+    fn show_gui(&mut self, props: &VisualizerProps, tick_time: &mut f32) {
         set_default_camera();
         self.gui.show(
             &GUIProps { 
@@ -93,13 +93,14 @@ impl Visualizer {
                 time_of_day: props.time_of_day,
                 time_of_day_string: props.time_of_day_string.clone(),
                 weather_condition: props.weather_condition
-            }
+            },
+            tick_time
         );
     }
 
-    pub fn show(&mut self, props: &VisualizerProps) {
+    pub fn show(&mut self, props: &VisualizerProps, tick_time: &mut f32) {
         self.update_camera(); // This needs to be done first
         self.render_world(props);
-        self.show_gui(props);
+        self.show_gui(props, tick_time);
     }
 }
