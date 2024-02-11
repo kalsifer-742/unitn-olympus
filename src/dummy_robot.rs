@@ -19,7 +19,7 @@ pub struct DummyRobot{
 }
 
 impl DummyRobot {
-    pub fn new(robot: Robot, oracle: Rc<RefCell<Oracle>> ) -> DummyRobot {
+    pub fn new(robot: Robot, oracle: Rc<RefCell<Oracle>>) -> DummyRobot {
         DummyRobot {
             robot,
             oracle
