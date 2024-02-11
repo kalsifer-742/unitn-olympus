@@ -65,9 +65,9 @@ impl GUI {
         (x - x_min) * ((y_max - y_min) / (x_max - x_min)) + y_min
     }
 
-    fn show_game_info(&self, props: &GUIProps) {
+    fn show_game_info(&self, props: &GUIProps, tick_time: &mut f32) {
         let position = vec2(self.viewport_width - 400.0, 0.0);
-        let size = vec2(400.0, 600.0);
+        let size = vec2(400.0, 650.0);
         
         widgets::Window::new(
             hash!("game_info_window"),
@@ -77,7 +77,9 @@ impl GUI {
         .label("Robot")
         .titlebar(true)
         .ui(&mut *root_ui(), |ui| {
-            ui.label(None, "Energy");
+            ui.label(None, format!("Game tick interval: ").as_str());
+            ui.slider(hash!("tick_time_slider"), "[0.0 - 5.0]", 0.0..5.0, tick_time);
+            ui.label(None, "Energy: ");
             let max_energy_level = 1000.0; //pub(crate) const MAX_ENERGY_LEVEL: usize = 1000;
             let cursor = ui.canvas().cursor();
             ui.canvas().rect(
@@ -220,10 +222,10 @@ impl GUI {
         self.exit
     }
 
-    pub(crate) fn show(&mut self, props: &GUIProps) {
+    pub(crate) fn show(&mut self, props: &GUIProps, tick_time: &mut f32) {
         draw_text("Press H for help", 0.0, self.viewport_height, 30.0, GREEN);
 
-        self.show_game_info(props);
+        self.show_game_info(props, tick_time);
         
         if self.quit_requested {
             self.grab_mouse(false);
