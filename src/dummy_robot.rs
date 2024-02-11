@@ -8,10 +8,8 @@ use robotics_lib::runner::backpack::BackPack;
 use robotics_lib::runner::{Robot, Runnable};
 use robotics_lib::world::coordinates::Coordinate;
 use robotics_lib::world::World;
-
 use macroquad::rand::ChooseRandom;
-
-use olympus::visualizer::oracle::Oracle;
+use crate::oracle::Oracle;
 
 pub struct DummyRobot{
     robot: Robot,

@@ -1,9 +1,11 @@
 use macroquad::prelude::*;
-use robotics_lib::world::tile::{Tile, TileType};
+use robotics_lib::world::{environmental_conditions::DayTime, tile::{Tile, TileType}};
 
 struct Textures {
     robot: Texture2D,
-    sky: Texture2D,
+    day_sky: Texture2D,
+    afternoon_sky: Texture2D,
+    night_sky: Texture2D,
     water_block: Texture2D,
     sand_block: Texture2D,
     grass_block: Texture2D,
@@ -36,7 +38,9 @@ impl Default for Textures {
     fn default() -> Self {
         Self {
             robot: Texture2D::from_file_with_format(include_bytes!("../../assets/creeper.png"), Some(ImageFormat::Png)),
-            sky: Texture2D::from_file_with_format(include_bytes!("../../assets/day_sky.png"), Some(ImageFormat::Png)),
+            day_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/day_sky.png"), Some(ImageFormat::Png)),
+            afternoon_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/afternoon_sky.png"), Some(ImageFormat::Png)),
+            night_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/night_sky.png"), Some(ImageFormat::Png)),
             water_block: Texture2D::from_file_with_format(include_bytes!("../../assets/underwater_opaque.png"), Some(ImageFormat::Png)),
             sand_block: Texture2D::from_file_with_format(include_bytes!("../../assets/sand.png"), Some(ImageFormat::Png)),
             grass_block: Texture2D::from_file_with_format(include_bytes!("../../assets/green_concrete_powder.png"),Some(ImageFormat::Png)),
@@ -59,6 +63,7 @@ pub struct Renderer {
 pub struct RendererProps {
     pub explored_world_map: Vec<Vec<Option<Tile>>>,
     pub robot_coordinates: (usize, usize),
+    pub time_of_day: DayTime
 }
 
 impl Renderer {
@@ -72,13 +77,19 @@ impl Renderer {
         }
     }
 
-    pub fn draw_background(&self) {
+    pub fn draw_background(&self, props: &RendererProps) {
         clear_background(LIGHTGRAY);
+
+        let texture = match props.time_of_day {
+            DayTime::Morning => &self.textures.day_sky,
+            DayTime::Afternoon => &self.textures.afternoon_sky,
+            DayTime::Night => &self.textures.night_sky,
+        };
 
         draw_sphere(
             vec3(self.world_map_size as f32 / 2.0, 0.0, self.world_map_size as f32 / 2.0), 
             self.world_map_size as f32 * 2.0, 
-            Some(&self.textures.sky),
+            Some(texture),
             WHITE,
         );
     }
@@ -156,7 +167,7 @@ impl Renderer {
     }
 
     pub fn render(&self, props: &RendererProps) {
-        self.draw_background();
+        self.draw_background(props);
         self.draw_grid(1.0, BLACK, GRAY);
         self.render_explored_map(props);
         self.render_robot(props);
