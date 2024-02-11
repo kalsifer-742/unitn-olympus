@@ -1,5 +1,3 @@
-use std::vec;
-
 use macroquad::prelude::*;
 use robotics_lib::world::tile::{Tile, TileType};
 
@@ -61,15 +59,6 @@ pub struct Renderer {
 pub struct RendererProps {
     pub explored_world_map: Vec<Vec<Option<Tile>>>,
     pub robot_coordinates: (usize, usize),
-}
-
-impl Default for RendererProps {
-    fn default() -> Self {
-        Self {
-            explored_world_map: vec![vec![None]],
-            robot_coordinates: (0, 0)
-        }
-    }
 }
 
 impl Renderer {

@@ -14,7 +14,7 @@ mod dummy_robot;
 fn window_conf() -> Conf {
     Conf {
         window_title: "Olympus".to_owned(),
-        window_width: 1902,
+        window_width: 1920,
         window_height: 1080,
         fullscreen: false,
         ..Default::default()
@@ -27,11 +27,11 @@ async fn main() {
     let world_size = 200;
     let mut world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
     // Oracle
-    let oracle = Rc::new(RefCell::new(Oracle::default()));
+    let oracle = Rc::new(RefCell::new(Oracle::new()));
     // Robot
     let robot = Box::new(DummyRobot::new(Robot::default(), Rc::clone(&oracle)));
     // Game
-    let mut game = RunnerWrapper::new(robot, &mut world_generator, 0.2);
+    let mut game: RunnerWrapper = RunnerWrapper::new(robot, &mut world_generator, 0.2, Rc::clone(&oracle));
     // Visualizer
     let mut visualizer = Visualizer::new(world_size);
     visualizer.init();
