@@ -1,5 +1,5 @@
 use macroquad::prelude::*;
-use robotics_lib::world::{environmental_conditions::DayTime, tile::{Tile, TileType}};
+use robotics_lib::world::{environmental_conditions::DayTime, tile::{Content, Tile, TileType}};
 
 struct Textures {
     robot: Texture2D,
@@ -15,7 +15,22 @@ struct Textures {
     snow_block: Texture2D,
     lava_block: Texture2D,
     teleport_block: Texture2D,
-    wall_block: Texture2D
+    wall_block: Texture2D,
+    rock_content: Texture2D,
+    tree_content: Texture2D,
+    garbage_content: Texture2D,
+    fire_content: Texture2D,
+    coin_content: Texture2D,
+    bin_content: Texture2D,
+    crate_content: Texture2D,
+    bank_content: Texture2D,
+    water_content: Texture2D,
+    market_content: Texture2D,
+    fish_content: Texture2D,
+    building_content: Texture2D,
+    bush_content: Texture2D,
+    jolly_block_content: Texture2D,
+    scarecrow_content: Texture2D
 }
 
 impl Textures {
@@ -31,6 +46,21 @@ impl Textures {
         self.lava_block.set_filter(FilterMode::Nearest);
         self.teleport_block.set_filter(FilterMode::Nearest);
         self.wall_block.set_filter(FilterMode::Nearest);
+        self.rock_content.set_filter(FilterMode::Nearest);
+        self.tree_content.set_filter(FilterMode::Nearest);
+        self.garbage_content.set_filter(FilterMode::Nearest);
+        self.fire_content.set_filter(FilterMode::Nearest);
+        self.coin_content.set_filter(FilterMode::Nearest);
+        self.bin_content.set_filter(FilterMode::Nearest);
+        self.crate_content.set_filter(FilterMode::Nearest);
+        self.bank_content.set_filter(FilterMode::Nearest);
+        self.water_content.set_filter(FilterMode::Nearest);
+        self.market_content.set_filter(FilterMode::Nearest);
+        self.fish_content.set_filter(FilterMode::Nearest);
+        self.building_content.set_filter(FilterMode::Nearest);
+        self.bush_content.set_filter(FilterMode::Nearest);
+        self.jolly_block_content.set_filter(FilterMode::Nearest);
+        self.scarecrow_content.set_filter(FilterMode::Nearest);
     }
 }
 
@@ -49,8 +79,23 @@ impl Default for Textures {
             mountain_block: Texture2D::from_file_with_format(include_bytes!("../../assets/stone.png"), Some(ImageFormat::Png)),
             snow_block: Texture2D::from_file_with_format(include_bytes!("../../assets/snow.png"), Some(ImageFormat::Png)),
             lava_block: Texture2D::from_file_with_format(include_bytes!("../../assets/lava.png"), Some(ImageFormat::Png)),
-            teleport_block: Texture2D::from_file_with_format(include_bytes!("../../assets/end_portal.png"), Some(ImageFormat::Png)),
-            wall_block: Texture2D::from_file_with_format(include_bytes!("../../assets/cobblestone.png"), Some(ImageFormat::Png)),
+            teleport_block: Texture2D::from_file_with_format(include_bytes!("../../assets/beacon.png"), Some(ImageFormat::Png)),
+            wall_block: Texture2D::from_file_with_format(include_bytes!("../../assets/bedrock.png"), Some(ImageFormat::Png)),
+            rock_content: Texture2D::from_file_with_format(include_bytes!("../../assets/cobblestone.png"), Some(ImageFormat::Png)),
+            tree_content: Texture2D::from_file_with_format(include_bytes!("../../assets/tree.png"), Some(ImageFormat::Png)),
+            garbage_content: Texture2D::from_file_with_format(include_bytes!("../../assets/charcoal.png"), Some(ImageFormat::Png)),
+            fire_content: Texture2D::from_file_with_format(include_bytes!("../../assets/fire.png"), Some(ImageFormat::Png)),
+            coin_content: Texture2D::from_file_with_format(include_bytes!("../../assets/emerald.png"), Some(ImageFormat::Png)),
+            bin_content: Texture2D::from_file_with_format(include_bytes!("../../assets/hopper.png"), Some(ImageFormat::Png)),
+            crate_content: Texture2D::from_file_with_format(include_bytes!("../../assets/barrel.png"), Some(ImageFormat::Png)),
+            bank_content: Texture2D::from_file_with_format(include_bytes!("../../assets/gold_block.png"), Some(ImageFormat::Png)),
+            water_content: Texture2D::from_file_with_format(include_bytes!("../../assets/water_bucket.png"), Some(ImageFormat::Png)),
+            market_content: Texture2D::from_file_with_format(include_bytes!("../../assets/emerald_block.png"), Some(ImageFormat::Png)),
+            fish_content: Texture2D::from_file_with_format(include_bytes!("../../assets/tropical_fish.png"), Some(ImageFormat::Png)),
+            building_content: Texture2D::from_file_with_format(include_bytes!("../../assets/bricks.png"), Some(ImageFormat::Png)),
+            bush_content: Texture2D::from_file_with_format(include_bytes!("../../assets/berry_bush.png"), Some(ImageFormat::Png)),
+            jolly_block_content: Texture2D::from_file_with_format(include_bytes!("../../assets/jack_o_lantern.png"), Some(ImageFormat::Png)),
+            scarecrow_content: Texture2D::from_file_with_format(include_bytes!("../../assets/armor_stand.png"), Some(ImageFormat::Png)),
         }
     }
 }
@@ -115,12 +160,14 @@ impl Renderer {
         }
     }
 
-    fn render_explored_map(&self, props: &RendererProps) {                
+    fn render_explored_map(&self, props: &RendererProps) {    
+        let offset = 0.5;
+
         for (x, row) in props.explored_world_map.iter().enumerate() {
             for (z, tile) in row.iter().enumerate() {
                 if let Some(tile) = tile {
                     let mut color = WHITE;
-                    let texture = match tile.tile_type {
+                    let tile_texture = match tile.tile_type {
                         TileType::DeepWater => { color = GRAY; &self.textures.water_block }
                         TileType::ShallowWater => &self.textures.water_block,
                         TileType::Sand => &self.textures.sand_block,
@@ -133,15 +180,51 @@ impl Renderer {
                         TileType::Teleport(_) => &self.textures.teleport_block,
                         TileType::Wall => &self.textures.wall_block,
                     };
+
+                    let content_texture = match tile.content {
+                        Content::Rock(_) => &self.textures.rock_content,
+                        Content::Tree(_) => &self.textures.tree_content,
+                        Content::Garbage(_) => &self.textures.garbage_content,
+                        Content::Fire => &self.textures.fire_content,
+                        Content::Coin(_) => &self.textures.coin_content,
+                        Content::Bin(_) => &self.textures.bin_content,
+                        Content::Crate(_) => &self.textures.crate_content,
+                        Content::Bank(_) => &self.textures.bank_content,
+                        Content::Water(_) => &self.textures.water_content,
+                        Content::Market(_) => &self.textures.market_content,
+                        Content::Fish(_) => &self.textures.fish_content,
+                        Content::Building => &self.textures.building_content,
+                        Content::Bush(_) => &self.textures.bush_content,
+                        Content::JollyBlock(_) => &self.textures.jolly_block_content,
+                        Content::Scarecrow => &self.textures.scarecrow_content,
+                        Content::None => tile_texture,
+                    };
                     
                     draw_affine_parallelepiped(
                         vec3(x as f32, 0.0, z as f32), //x as f32 * Vec3::X + z as f32 * Vec3::Z,
                         1.0 * Vec3::X,
                         (tile.elevation as f32) * Vec3::Y,
                         1.0 * Vec3::Z,
-                        Some(texture),
+                        Some(tile_texture),
                         color
                     );
+
+                    if tile.content == Content::None {
+                        draw_cube_wires(
+                            vec3(offset + x as f32, 0.25 + tile.elevation as f32, offset + z as f32),
+                            vec3(0.5, 0.5, 0.5),
+                            WHITE,
+                        );
+                    } else {
+                        draw_cube(
+                            vec3(offset + x as f32, 0.25 + tile.elevation as f32, offset + z as f32),
+                            vec3(0.5, 0.5, 0.5),
+                            Some(content_texture),
+                            WHITE
+                        );
+                    }
+
+                    //sphere or plane
                 }
             }
         }
