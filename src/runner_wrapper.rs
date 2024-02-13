@@ -9,9 +9,9 @@ pub struct RunnerWrapper {
 }
 
 impl RunnerWrapper {
-    pub fn new(robot: Box<dyn Runnable>, world_generator: &mut impl Generator) -> Self {
+    pub fn new(robot: impl Runnable + 'static, mut world_generator: impl Generator) -> Self {
         Self {
-            runner: Runner::new(robot, world_generator).expect("errore"),
+            runner: Runner::new(Box::new(robot), &mut world_generator).expect("Error creating runner"),
             last_time: get_time(),
             current_time: get_time(),
             tick_time: 0.5

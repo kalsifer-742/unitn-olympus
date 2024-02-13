@@ -5,9 +5,9 @@ use macroquad::ui::{root_ui, widgets, Layout};
 use macroquad::hash;
 use robotics_lib::world::environmental_conditions::{DayTime, WeatherType};
 use robotics_lib::world::tile::Content;
-use crate::visualizer::controls::KeyboardControls;
+use crate::gui::keyboard_controls::KeyboardControls;
 
-pub struct GUI {
+pub struct UI {
     viewport_width: f32,
     viewport_height: f32,
     keyboard_controls: KeyboardControls,
@@ -18,7 +18,7 @@ pub struct GUI {
     is_mouse_grabbed: bool,
 }
 
-pub struct GUIProps {
+pub struct UIProps {
     pub discoverable_tiles: usize,
     pub robot_coordinates: (usize, usize),
     pub robot_energy: usize,
@@ -30,7 +30,22 @@ pub struct GUIProps {
     pub weather_condition: WeatherType,
 }
 
-impl GUI {
+impl Default for UI {
+    fn default() -> Self {
+        Self {
+            viewport_width: screen_width(),
+            viewport_height: screen_height(),
+            keyboard_controls: Default::default(),
+            show_help: false,
+            show_stats: false,
+            quit_requested: false,
+            exit: false,
+            is_mouse_grabbed: true,
+        }
+    }
+}
+
+impl UI {
     pub(crate) fn grab_mouse(&mut self, grabbed: bool) {
         if grabbed {
             set_cursor_grab(true);
@@ -65,7 +80,7 @@ impl GUI {
         (x - x_min) * ((y_max - y_min) / (x_max - x_min)) + y_min
     }
 
-    fn show_game_info(&self, props: &GUIProps, tick_time: &mut f32) {
+    fn show_game_info(&self, props: UIProps, tick_time: &mut f32) {
         let position = vec2(self.viewport_width - 400.0, 0.0);
         let size = vec2(400.0, 650.0);
         
@@ -222,7 +237,7 @@ impl GUI {
         self.exit
     }
 
-    pub(crate) fn show(&mut self, props: &GUIProps, tick_time: &mut f32) {
+    pub(crate) fn render(&mut self, props: UIProps, tick_time: &mut f32) {
         draw_text("Press H for help", 0.0, self.viewport_height, 30.0, GREEN);
 
         self.show_game_info(props, tick_time);
@@ -236,21 +251,6 @@ impl GUI {
         }
         if self.show_help {
             self.show_help();
-        }
-    }
-}
-
-impl Default for GUI {
-    fn default() -> Self {
-        Self {
-            viewport_width: screen_width(),
-            viewport_height: screen_height(),
-            keyboard_controls: Default::default(),
-            show_help: false,
-            show_stats: false,
-            quit_requested: false,
-            exit: false,
-            is_mouse_grabbed: true,
         }
     }
 }
