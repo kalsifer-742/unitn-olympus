@@ -16,6 +16,25 @@ pub struct UI {
     quit_requested: bool,
     exit: bool,
     is_mouse_grabbed: bool,
+    mouse_grabbed_flag: bool,
+    old_grab_status: bool,
+}
+
+impl Default for UI {
+    fn default() -> Self {
+        Self {
+            viewport_width: screen_width(),
+            viewport_height: screen_height(),
+            keyboard_controls: Default::default(),
+            show_help: false,
+            show_stats: false,
+            quit_requested: false,
+            exit: false,
+            is_mouse_grabbed: false,
+            mouse_grabbed_flag: true,
+            old_grab_status: false,
+        }
+    }
 }
 
 pub struct UIProps {
@@ -30,24 +49,13 @@ pub struct UIProps {
     pub weather_condition: WeatherType,
 }
 
-impl Default for UI {
-    fn default() -> Self {
-        Self {
-            viewport_width: screen_width(),
-            viewport_height: screen_height(),
-            keyboard_controls: Default::default(),
-            show_help: false,
-            show_stats: false,
-            quit_requested: false,
-            exit: false,
-            is_mouse_grabbed: true,
-        }
-    }
-}
-
 impl UI {
-    pub(crate) fn grab_mouse(&mut self, grabbed: bool) {
-        if grabbed {
+    pub(crate) fn is_mouse_grabbed(&self) -> bool {
+        self.is_mouse_grabbed
+    }
+
+    fn grab_mouse(&self, grab: bool) {
+        if grab {
             set_cursor_grab(true);
             show_mouse(false);
         } else {
@@ -56,7 +64,7 @@ impl UI {
         }
     }
 
-    fn toggle_mouse_grab(&mut self) {
+    pub(crate) fn toggle_mouse_grab(&mut self) {
         self.is_mouse_grabbed = !self.is_mouse_grabbed;
         self.grab_mouse(self.is_mouse_grabbed);
     }
@@ -227,7 +235,10 @@ impl UI {
             }
             ui.same_line(120.);
             if ui.button(None, "No") {
-                self.grab_mouse(self.is_mouse_grabbed);
+                if self.old_grab_status {
+                    self.toggle_mouse_grab();
+                }
+                self.mouse_grabbed_flag = true;
                 self.quit_requested = false;
             }
         });
@@ -243,7 +254,13 @@ impl UI {
         self.show_game_info(props, tick_time);
         
         if self.quit_requested {
-            self.grab_mouse(false);
+            if self.mouse_grabbed_flag {
+                self.mouse_grabbed_flag = false;
+                self.old_grab_status = self.is_mouse_grabbed;
+            }
+            if self.is_mouse_grabbed {
+                self.toggle_mouse_grab();
+            }
             self.show_exit_dialog();
         }
         if self.show_stats {
