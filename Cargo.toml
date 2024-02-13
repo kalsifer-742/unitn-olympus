@@ -2,9 +2,18 @@
 name = "olympus"
 version = "0.1.0"
 edition = "2021"
+authors = ["Enrico Dalla Croce (Kalsifer-742)"]
+description = "GUI for the robotics_lib"
+readme = "README.md"
+repository = "https://github.com/Kalsifer-742/olympus.git"
 publish = ["kellnr"]
 
 [dependencies]
 robotics_lib = { version = "0.1.21", registry = "kellnr" }
-rip_worldgenerator = { version = "0.5.54", registry = "kellnr" }
 macroquad = "0.4.4"
+
+[dev-dependencies]
+rip_worldgenerator = { version = "0.5.54", registry = "kellnr" }
+
+[[example]]
+name = "example"

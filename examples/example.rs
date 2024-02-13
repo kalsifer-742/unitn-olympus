@@ -7,9 +7,10 @@ use olympus::channel::Channel;
 use olympus::Visualizer;
 use robotics_lib::{energy::Energy, event::events::Event, interface::{go, Direction}, runner::{backpack::BackPack, Robot, Runnable}, world::{coordinates::Coordinate, World}};
 
+// Example implementation of a robot that works with olympus visualizer
 pub struct DummyRobot{
     robot: Robot,
-    channel: Rc<RefCell<Channel>>
+    channel: Rc<RefCell<Channel>> // Your robot must have a channel to comunicate with the GUI
 }
 
 impl DummyRobot {
@@ -23,13 +24,10 @@ impl DummyRobot {
 
 impl Runnable for DummyRobot {
     fn process_tick(&mut self, world: &mut World) {
-        // move and view around
         let directions = vec![Direction::Left, Direction::Right, Direction::Up, Direction::Down];
-        // go inside calls robot_view
-        if go(self, world, directions.choose().unwrap().clone()).is_err() {
-            return;
-        }
+        let _ = go(self, world, directions.choose().unwrap().clone());
 
+        // You need to call this method to update the GUI
         self.channel.borrow_mut().send_game_info(self, world);
     }
 
@@ -38,6 +36,7 @@ impl Runnable for DummyRobot {
             Event::Ready => {}
             Event::Terminated => {}
             Event::TimeChanged(weather) => {
+                // You need to call this method to update the GUI
                 self.channel.borrow_mut().send_weather_info(weather);
             }
             Event::DayChanged(_) => {}
@@ -75,9 +74,11 @@ impl Runnable for DummyRobot {
     }
 }
 
+// You probably don't want to edit this
+// But if you need to, remember that you cannot change the name of this function
 fn window_conf() -> Conf {
     Conf {
-        window_title: "Olympus".to_owned(),
+        window_title: "Olympus".to_string(),
         window_width: 1920,
         window_height: 1080,
         fullscreen: false,
@@ -85,14 +86,19 @@ fn window_conf() -> Conf {
     }
 }
 
+// This macro is Macroquad entry point
 #[macroquad::main(window_conf)]
+// The main() function needs to be async for the visualizer to work
 async fn main() {
+    // Channel
+    // This is a channel used by the robot to comunicate with the GUI 
     let channel = Rc::new(RefCell::new(Channel::default()));
 
     // World Generator
     let world_size = 200;
     let world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
     // Robot
+    // Your robot must have channel as a field
     let robot = DummyRobot::new(Rc::clone(&channel));
     
     // Visualizer
