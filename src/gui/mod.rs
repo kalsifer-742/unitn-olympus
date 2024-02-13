@@ -18,17 +18,15 @@ pub struct GUI {
     pub ui: UI,
 }
 
-impl Default for GUI {
-    fn default() -> Self {
+impl GUI {
+    pub fn new(world_size: usize) -> Self {
         Self {
             camera: Default::default(),
-            renderer: Default::default(),
+            renderer: Renderer::new(world_size),
             ui: Default::default(),
         }
     }
-}
 
-impl GUI {
     pub fn handle_input(&mut self) {
         self.camera.handle_input();
         self.ui.handle_input();
@@ -68,7 +66,11 @@ impl GUI {
     }
 
     pub fn render(&mut self, data: ChannelData, tick_time: &mut f32) {
-        self.update_camera(); // This needs to be done first
+        if self.ui.is_mouse_grabbed() {
+            self.update_camera(); // This needs to be done first
+        } else {
+            set_camera(self.camera.get_actual_camera());
+        }
         self.render_game(data.clone());
         self.render_ui(data.clone(), tick_time);
     }
