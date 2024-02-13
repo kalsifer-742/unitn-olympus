@@ -96,6 +96,6 @@ async fn main() {
     let robot = DummyRobot::new(Rc::clone(&channel));
     
     // Visualizer
-    let mut visualizer = Visualizer::new(robot, world_generator, Rc::clone(&channel));
-    visualizer.start().await
+    let mut visualizer = Visualizer::new(robot, world_generator, world_size, Rc::clone(&channel));
+    visualizer.start().await;
 }

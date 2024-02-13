@@ -112,19 +112,17 @@ pub struct Renderer {
     textures: Textures
 }
 
-impl Default for Renderer {
-    fn default() -> Self {
+impl Renderer {
+    pub fn new(world_map_size: usize) -> Self {
         let textures = Textures::default();
         textures.init();
             
         Self {
-            world_map_size: 0,
+            world_map_size,
             textures
         }
     }
-}
 
-impl Renderer {
     pub fn draw_background(&self, props: RendererProps) {
         clear_background(LIGHTGRAY);
 
@@ -252,7 +250,7 @@ impl Renderer {
         }
     }
 
-    pub fn render(&self, props: RendererProps) {
+    pub fn render(&self, props: RendererProps) {       
         self.draw_background(props.clone());
         self.draw_grid(1.0, BLACK, GRAY);
         self.render_explored_map(props.clone());
