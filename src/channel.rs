@@ -19,7 +19,7 @@ struct Message {
 }
 
 #[derive(Clone)]
-pub struct ChannelData {
+pub(crate) struct ChannelData {
     pub explored_world_map: Vec<Vec<Option<Tile>>>,
     pub robot_coordinates: (usize, usize),
     pub robot_energy: usize,
@@ -62,7 +62,7 @@ impl Default for Channel {
 }
 
 impl Channel {
-    pub fn receive(&self) -> ChannelData {
+    pub(crate) fn receive(&self) -> ChannelData {
         self.data.clone()
     }
 
