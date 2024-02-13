@@ -17,16 +17,16 @@ pub struct Visualizer {
 }
 
 impl Visualizer {
-    pub fn new(robot: impl Runnable + 'static, world_generator: impl Generator, channel: Rc<RefCell<Channel>>) -> Self {
+    pub fn new(robot: impl Runnable + 'static, world_generator: impl Generator, world_size: usize, channel: Rc<RefCell<Channel>>) -> Self {
         Self {
             runner: RunnerWrapper::new(robot, world_generator),
-            gui: Default::default(),
+            gui: GUI::new(world_size),
             channel
         }
     }
 
     pub async fn start(&mut self) {
-        self.gui.ui.grab_mouse(true);
+        self.gui.ui.toggle_mouse_grab();
 
         loop {
             self.gui.handle_input();
