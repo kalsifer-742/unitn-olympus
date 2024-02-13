@@ -100,29 +100,32 @@ impl Default for Textures {
     }
 }
 
-pub struct Renderer {
-    world_map_size: usize,
-    textures: Textures
-}
-
+#[derive(Clone)]
 pub struct RendererProps {
     pub explored_world_map: Vec<Vec<Option<Tile>>>,
     pub robot_coordinates: (usize, usize),
     pub time_of_day: DayTime
 }
 
-impl Renderer {
-    pub fn new(world_map_size: usize) -> Self {        
+pub struct Renderer {
+    world_map_size: usize,
+    textures: Textures
+}
+
+impl Default for Renderer {
+    fn default() -> Self {
         let textures = Textures::default();
         textures.init();
-        
+            
         Self {
-            world_map_size,
+            world_map_size: 0,
             textures
         }
     }
+}
 
-    pub fn draw_background(&self, props: &RendererProps) {
+impl Renderer {
+    pub fn draw_background(&self, props: RendererProps) {
         clear_background(LIGHTGRAY);
 
         let texture = match props.time_of_day {
@@ -160,7 +163,7 @@ impl Renderer {
         }
     }
 
-    fn render_explored_map(&self, props: &RendererProps) {    
+    fn render_explored_map(&self, props: RendererProps) {    
         let offset = 0.5;
 
         for (x, row) in props.explored_world_map.iter().enumerate() {
@@ -230,7 +233,7 @@ impl Renderer {
         }
     }
 
-    fn render_robot(&self, props: &RendererProps) {
+    fn render_robot(&self, props: RendererProps) {
         let offset = 0.5;
         let (x, z) = props.robot_coordinates;
         
@@ -249,10 +252,10 @@ impl Renderer {
         }
     }
 
-    pub fn render(&self, props: &RendererProps) {
-        self.draw_background(props);
+    pub fn render(&self, props: RendererProps) {
+        self.draw_background(props.clone());
         self.draw_grid(1.0, BLACK, GRAY);
-        self.render_explored_map(props);
-        self.render_robot(props);
+        self.render_explored_map(props.clone());
+        self.render_robot(props.clone());
     }
 }

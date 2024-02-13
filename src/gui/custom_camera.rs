@@ -1,6 +1,6 @@
 use macroquad::input::{mouse_position, is_key_down};
 use macroquad::{camera::Camera3D, math::{vec3, Vec2, Vec3}};
-use crate::visualizer::controls::KeyboardControls;
+use crate::gui::keyboard_controls::KeyboardControls;
 
 pub struct CustomCamera {
     actual_camera: Camera3D,

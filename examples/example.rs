@@ -1,26 +1,22 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use robotics_lib::energy::Energy;
-use robotics_lib::event::events::Event;
-use robotics_lib::interface::{go, Direction};
-use robotics_lib::runner::backpack::BackPack;
-use robotics_lib::runner::{Robot, Runnable};
-use robotics_lib::world::coordinates::Coordinate;
-use robotics_lib::world::World;
-use macroquad::rand::ChooseRandom;
-use crate::oracle::Oracle;
+use macroquad::{prelude::*, rand::ChooseRandom};
+use rip_worldgenerator::MyWorldGen;
+use olympus::channel::Channel;
+use olympus::Visualizer;
+use robotics_lib::{energy::Energy, event::events::Event, interface::{go, Direction}, runner::{backpack::BackPack, Robot, Runnable}, world::{coordinates::Coordinate, World}};
 
 pub struct DummyRobot{
     robot: Robot,
-    oracle: Rc<RefCell<Oracle>>
+    channel: Rc<RefCell<Channel>>
 }
 
 impl DummyRobot {
-    pub fn new(robot: Robot, oracle: Rc<RefCell<Oracle>>) -> DummyRobot {
+    pub fn new(channel: Rc<RefCell<Channel>>) -> DummyRobot {
         DummyRobot {
-            robot,
-            oracle
+            robot: Robot::default(),
+            channel
         }
     }
 }
@@ -34,26 +30,20 @@ impl Runnable for DummyRobot {
             return;
         }
 
-        self.oracle.borrow_mut().update_props(self, world);
+        self.channel.borrow_mut().send_game_info(self, world);
     }
 
     fn handle_event(&mut self, event: Event) {
-        //could be used but it makes things more complicated
         match event {
             Event::Ready => {}
             Event::Terminated => {}
             Event::TimeChanged(weather) => {
-                self.oracle.borrow_mut().update_weather(weather);
+                self.channel.borrow_mut().send_weather_info(weather);
             }
             Event::DayChanged(_) => {}
             Event::EnergyRecharged(_) => {}
             Event::EnergyConsumed(_) => {}
-            Event::Moved(_tile, (_x, _y)) => {
-                // the event contains only the tile on which the robot is
-                // not useful because there is no way to get the explored tiles
-                // robot_view() gives a 3x3 matrix
-                // inside this function i do not have acces to the world 
-            }
+            Event::Moved(_, (_, _)) => {}
             Event::TileContentUpdated(_, _) => {}
             Event::AddedToBackpack(_, _) => {}
             Event::RemovedFromBackpack(_, _) => {}
@@ -83,4 +73,29 @@ impl Runnable for DummyRobot {
     fn get_backpack_mut(&mut self) -> &mut BackPack {
         &mut self.robot.backpack
     }
+}
+
+fn window_conf() -> Conf {
+    Conf {
+        window_title: "Olympus".to_owned(),
+        window_width: 1920,
+        window_height: 1080,
+        fullscreen: false,
+        ..Default::default()
+    }
+}
+
+#[macroquad::main(window_conf)]
+async fn main() {
+    let channel = Rc::new(RefCell::new(Channel::default()));
+
+    // World Generator
+    let world_size = 200;
+    let world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
+    // Robot
+    let robot = DummyRobot::new(Rc::clone(&channel));
+    
+    // Visualizer
+    let mut visualizer = Visualizer::new(robot, world_generator, Rc::clone(&channel));
+    visualizer.start().await
 }
