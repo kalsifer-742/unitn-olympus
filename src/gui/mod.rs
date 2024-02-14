@@ -39,10 +39,10 @@ impl GUI {
         set_camera(self.camera.get_actual_camera());
     }
     
-    fn render_game(&self, data: ChannelData) {
+    fn render_game(&self, data: &ChannelData) {
         self.renderer.render(
             RendererProps { 
-                explored_world_map: data.explored_world_map.clone(),
+                explored_world_map: &data.explored_world_map,
                 robot_coordinates: data.robot_coordinates,
                 time_of_day: data.time_of_day
             },
@@ -50,13 +50,13 @@ impl GUI {
         );
     }
     
-    fn render_ui(&mut self, data: ChannelData) {
+    fn render_ui(&mut self, data: &ChannelData) {
         set_default_camera();
         self.ui.render(
             UIProps { 
                 robot_coordinates: data.robot_coordinates,
                 robot_energy: data.robot_energy,
-                robot_backpack_contents: data.robot_backpack_contents.clone(),
+                robot_backpack_contents: &data.robot_backpack_contents,
                 robot_backpack_size: data.robot_backpack_size,
                 discoverable_tiles: data.discoverable_tiles,
                 robot_score: data.robot_score,
@@ -67,13 +67,13 @@ impl GUI {
         );
     }
 
-    pub(crate) fn render(&mut self, data: ChannelData) {
+    pub(crate) fn render(&mut self, data: &ChannelData) {
         if self.ui.is_mouse_grabbed() {
             self.update_camera(); // This needs to be done first
         } else {
             set_camera(self.camera.get_actual_camera());
         }
-        self.render_game(data.clone());
-        self.render_ui(data.clone());
+        self.render_game(data);
+        self.render_ui(data);
     }
 }

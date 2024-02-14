@@ -38,8 +38,7 @@ impl Visualizer {
 
             self.runner.tick();
             
-            let props = self.channel.borrow().receive();
-            self.gui.render(props);
+            self.gui.render(self.channel.borrow().receive());
     
             next_frame().await
         }

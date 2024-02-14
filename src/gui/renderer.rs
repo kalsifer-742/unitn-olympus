@@ -101,8 +101,8 @@ impl Default for Textures {
 }
 
 #[derive(Clone)]
-pub struct RendererProps {
-    pub explored_world_map: Vec<Vec<Option<Tile>>>,
+pub struct RendererProps<'a> {
+    pub explored_world_map: &'a Vec<Vec<Option<Tile>>>,
     pub robot_coordinates: (usize, usize),
     pub time_of_day: DayTime
 }
@@ -123,7 +123,7 @@ impl Renderer {
         }
     }
 
-    pub fn draw_background(&self, props: RendererProps, daylight_cycle: bool) {
+    pub fn draw_background(&self, props: &RendererProps, daylight_cycle: bool) {
         clear_background(LIGHTGRAY);
 
         if daylight_cycle {
@@ -163,7 +163,7 @@ impl Renderer {
         }
     }
 
-    fn render_explored_map(&self, props: RendererProps) {    
+    fn render_explored_map(&self, props: &RendererProps) {    
         let offset = 0.5;
 
         for (x, row) in props.explored_world_map.iter().enumerate() {
@@ -225,7 +225,7 @@ impl Renderer {
         }
     }
 
-    fn render_robot(&self, props: RendererProps) {
+    fn render_robot(&self, props: &RendererProps) {
         let offset = 0.5;
         let (x, z) = props.robot_coordinates;
         
@@ -245,9 +245,9 @@ impl Renderer {
     }
 
     pub fn render(&self, props: RendererProps, daylight_cycle: bool) {       
-        self.draw_background(props.clone(), daylight_cycle);
+        self.draw_background(&props, daylight_cycle);
         self.draw_grid(1.0, BLACK, GRAY);
-        self.render_explored_map(props.clone());
-        self.render_robot(props.clone());
+        self.render_explored_map(&props);
+        self.render_robot(&props);
     }
 }
