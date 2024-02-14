@@ -109,7 +109,7 @@ pub struct RendererProps {
 
 pub struct Renderer {
     world_map_size: usize,
-    textures: Textures
+    textures: Textures,
 }
 
 impl Renderer {
@@ -119,25 +119,27 @@ impl Renderer {
             
         Self {
             world_map_size,
-            textures
+            textures,
         }
     }
 
-    pub fn draw_background(&self, props: RendererProps) {
+    pub fn draw_background(&self, props: RendererProps, daylight_cycle: bool) {
         clear_background(LIGHTGRAY);
 
-        let texture = match props.time_of_day {
-            DayTime::Morning => &self.textures.day_sky,
-            DayTime::Afternoon => &self.textures.afternoon_sky,
-            DayTime::Night => &self.textures.night_sky,
-        };
-
-        draw_sphere(
-            vec3(self.world_map_size as f32 / 2.0, 0.0, self.world_map_size as f32 / 2.0), 
-            self.world_map_size as f32 * 2.0, 
-            Some(texture),
-            WHITE,
-        );
+        if daylight_cycle {
+            let texture = match props.time_of_day {
+                DayTime::Morning => &self.textures.day_sky,
+                DayTime::Afternoon => &self.textures.afternoon_sky,
+                DayTime::Night => &self.textures.night_sky,
+            };
+    
+            draw_sphere(
+                vec3(self.world_map_size as f32 / 2.0, 0.0, self.world_map_size as f32 / 2.0), 
+                self.world_map_size as f32 * 2.0, 
+                Some(texture),
+                WHITE,
+            );
+        }
     }
 
     fn draw_grid(&self, spacing: f32, axes_color: Color, other_color: Color) {
@@ -218,8 +220,6 @@ impl Renderer {
                             WHITE
                         );
                     }
-
-                    //sphere or plane
                 }
             }
         }
@@ -244,8 +244,8 @@ impl Renderer {
         }
     }
 
-    pub fn render(&self, props: RendererProps) {       
-        self.draw_background(props.clone());
+    pub fn render(&self, props: RendererProps, daylight_cycle: bool) {       
+        self.draw_background(props.clone(), daylight_cycle);
         self.draw_grid(1.0, BLACK, GRAY);
         self.render_explored_map(props.clone());
         self.render_robot(props.clone());

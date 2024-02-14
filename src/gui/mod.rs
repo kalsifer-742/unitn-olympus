@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 use macroquad::prelude::*;
 use custom_camera::CustomCamera;
 use renderer::Renderer;
@@ -19,11 +21,11 @@ pub struct GUI {
 }
 
 impl GUI {
-    pub fn new(world_size: usize) -> Self {
+    pub fn new(world_size: usize, tick_time: Rc<RefCell<f32>>) -> Self {
         Self {
             camera: Default::default(),
             renderer: Renderer::new(world_size),
-            ui: Default::default(),
+            ui: UI::new(tick_time),
         }
     }
 
@@ -43,11 +45,12 @@ impl GUI {
                 explored_world_map: data.explored_world_map.clone(),
                 robot_coordinates: data.robot_coordinates,
                 time_of_day: data.time_of_day
-            }
+            },
+            self.ui.is_day_light_cycle_on()
         );
     }
     
-    fn render_ui(&mut self, data: ChannelData, tick_time: &mut f32) {
+    fn render_ui(&mut self, data: ChannelData) {
         set_default_camera();
         self.ui.render(
             UIProps { 
@@ -60,18 +63,17 @@ impl GUI {
                 time_of_day: data.time_of_day,
                 time_of_day_string: data.time_of_day_string.clone(),
                 weather_condition: data.weather_condition
-            },
-            tick_time
+            }
         );
     }
 
-    pub(crate) fn render(&mut self, data: ChannelData, tick_time: &mut f32) {
+    pub(crate) fn render(&mut self, data: ChannelData) {
         if self.ui.is_mouse_grabbed() {
             self.update_camera(); // This needs to be done first
         } else {
             set_camera(self.camera.get_actual_camera());
         }
         self.render_game(data.clone());
-        self.render_ui(data.clone(), tick_time);
+        self.render_ui(data.clone());
     }
 }
