@@ -13,15 +13,17 @@ pub mod channel;
 pub struct Visualizer {
     runner: RunnerWrapper,
     gui: GUI,
-    channel: Rc<RefCell<Channel>>
+    channel: Rc<RefCell<Channel>>,
 }
 
 impl Visualizer {
-    pub fn new(robot: impl Runnable + 'static, world_generator: impl Generator, world_size: usize, channel: Rc<RefCell<Channel>>) -> Self {
+    pub fn new(robot: impl Runnable + 'static, world_generator: impl Generator, world_size: usize, channel: Rc<RefCell<Channel>>) -> Self {        
+        let tick_time = Rc::new(RefCell::new(0.5));
+        
         Self {
-            runner: RunnerWrapper::new(robot, world_generator),
-            gui: GUI::new(world_size),
-            channel
+            runner: RunnerWrapper::new(robot, world_generator, Rc::clone(&tick_time)),
+            gui: GUI::new(world_size, Rc::clone(&tick_time)),
+            channel,
         }
     }
 
@@ -35,10 +37,9 @@ impl Visualizer {
             }
 
             self.runner.tick();
-            //get robot data
             
             let props = self.channel.borrow().receive();
-            self.gui.render(props, self.runner.get_tick_time());
+            self.gui.render(props);
     
             next_frame().await
         }

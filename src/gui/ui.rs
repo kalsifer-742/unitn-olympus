@@ -1,4 +1,6 @@
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::rc::Rc;
 use macroquad::prelude::*;
 use macroquad::telemetry::textures_count;
 use macroquad::ui::{root_ui, widgets, Layout};
@@ -18,23 +20,8 @@ pub struct UI {
     is_mouse_grabbed: bool,
     mouse_grabbed_flag: bool,
     old_grab_status: bool,
-}
-
-impl Default for UI {
-    fn default() -> Self {
-        Self {
-            viewport_width: screen_width(),
-            viewport_height: screen_height(),
-            keyboard_controls: Default::default(),
-            show_help: false,
-            show_stats: false,
-            quit_requested: false,
-            exit: false,
-            is_mouse_grabbed: false,
-            mouse_grabbed_flag: true,
-            old_grab_status: false,
-        }
-    }
+    tick_time: Rc<RefCell<f32>>,
+    daylight_cycle: bool,
 }
 
 pub struct UIProps {
@@ -50,6 +37,23 @@ pub struct UIProps {
 }
 
 impl UI {
+    pub fn new(tick_time: Rc<RefCell<f32>>) -> Self {
+        Self {
+            viewport_width: screen_width(),
+            viewport_height: screen_height(),
+            keyboard_controls: Default::default(),
+            show_help: false,
+            show_stats: false,
+            quit_requested: false,
+            exit: false,
+            is_mouse_grabbed: false,
+            mouse_grabbed_flag: true,
+            old_grab_status: false,
+            tick_time,
+            daylight_cycle: true
+        }
+    }
+
     pub(crate) fn is_mouse_grabbed(&self) -> bool {
         self.is_mouse_grabbed
     }
@@ -88,9 +92,9 @@ impl UI {
         (x - x_min) * ((y_max - y_min) / (x_max - x_min)) + y_min
     }
 
-    fn show_game_info(&self, props: UIProps, tick_time: &mut f32) {
+    fn show_game_info(&mut self, props: UIProps) {
         let position = vec2(self.viewport_width - 400.0, 0.0);
-        let size = vec2(400.0, 650.0);
+        let size = vec2(400.0, 700.0);
         
         widgets::Window::new(
             hash!("game_info_window"),
@@ -101,7 +105,8 @@ impl UI {
         .titlebar(true)
         .ui(&mut *root_ui(), |ui| {
             ui.label(None, format!("Game tick interval: ").as_str());
-            ui.slider(hash!("tick_time_slider"), "[0.0 - 5.0]", 0.0..5.0, tick_time);
+            ui.slider(hash!("tick_time_slider"), "[0.0 - 5.0]", 0.0..5.0, &mut self.tick_time.borrow_mut());
+            ui.checkbox(hash!("daylight_cicle_checkbox"), "Daylight cycle", &mut self.daylight_cycle);
             ui.label(None, "Energy: ");
             let max_energy_level = 1000.0; //pub(crate) const MAX_ENERGY_LEVEL: usize = 1000;
             let cursor = ui.canvas().cursor();
@@ -169,7 +174,7 @@ impl UI {
                     DayTime::Night => "Night",
                 }).as_str()
             );
-            ui.label(None, format!("Time HH:MM - {}", props.time_of_day_string).as_str());
+            ui.label(None, format!("Time clock: {}", props.time_of_day_string).as_str());
             ui.label(None, format!("Weather: {}", match props.weather_condition {
                 WeatherType::Sunny => "Sunny",
                 WeatherType::Rainy => "Rainy",
@@ -248,10 +253,14 @@ impl UI {
         self.exit
     }
 
-    pub(crate) fn render(&mut self, props: UIProps, tick_time: &mut f32) {
+    pub fn is_day_light_cycle_on(&self) -> bool {
+        self.daylight_cycle
+    }
+
+    pub(crate) fn render(&mut self, props: UIProps) {
         draw_text("Press H for help", 0.0, self.viewport_height, 30.0, GREEN);
 
-        self.show_game_info(props, tick_time);
+        self.show_game_info(props);
         
         if self.quit_requested {
             if self.mouse_grabbed_flag {
