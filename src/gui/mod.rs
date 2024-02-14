@@ -54,6 +54,7 @@ impl GUI {
         set_default_camera();
         self.ui.render(
             UIProps { 
+                explored_world_map: &data.explored_world_map,
                 robot_coordinates: data.robot_coordinates,
                 robot_energy: data.robot_energy,
                 robot_backpack_contents: &data.robot_backpack_contents,

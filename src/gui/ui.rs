@@ -6,7 +6,7 @@ use macroquad::telemetry::textures_count;
 use macroquad::ui::{root_ui, widgets, Layout};
 use macroquad::hash;
 use robotics_lib::world::environmental_conditions::{DayTime, WeatherType};
-use robotics_lib::world::tile::Content;
+use robotics_lib::world::tile::{Content, Tile};
 use sys_info::{cpu_num, cpu_speed, mem_info, os_release, MemInfo};
 use crate::gui::keyboard_controls::KeyboardControls;
 
@@ -14,6 +14,7 @@ pub struct UI {
     viewport_width: f32,
     viewport_height: f32,
     keyboard_controls: KeyboardControls,
+    show_tile_info: bool,
     show_help: bool,
     show_stats: bool,
     quit_requested: bool,
@@ -26,6 +27,7 @@ pub struct UI {
 }
 
 pub struct UIProps<'a> {
+    pub explored_world_map: &'a Vec<Vec<Option<Tile>>>,
     pub discoverable_tiles: usize,
     pub robot_coordinates: (usize, usize),
     pub robot_energy: usize,
@@ -43,6 +45,7 @@ impl UI {
             viewport_width: screen_width(),
             viewport_height: screen_height(),
             keyboard_controls: Default::default(),
+            show_tile_info: false,
             show_help: false,
             show_stats: false,
             quit_requested: false,
@@ -75,11 +78,8 @@ impl UI {
     }
 
     pub(crate) fn handle_input(&mut self) {
-        if is_key_pressed(self.keyboard_controls.exit){
-            self.quit_requested = true;
-        }
-        if is_key_pressed(self.keyboard_controls.toggle_free_mouse) {
-            self.toggle_mouse_grab();
+        if is_key_pressed(self.keyboard_controls.toggle_tile_info) {
+            self.show_tile_info = !self.show_tile_info;
         }
         if is_key_pressed(self.keyboard_controls.toggle_help) {
             self.show_help = !self.show_help;
@@ -87,13 +87,16 @@ impl UI {
         if is_key_pressed(self.keyboard_controls.toggle_statistics) {
             self.show_stats = !self.show_stats;
         }
+        if is_key_pressed(self.keyboard_controls.exit){
+            self.quit_requested = true;
+        }
     }
 
     fn map_range(x: f32, x_min: f32, x_max: f32, y_min: f32, y_max: f32) -> f32 {
         (x - x_min) * ((y_max - y_min) / (x_max - x_min)) + y_min
     }
 
-    fn show_game_info(&mut self, props: UIProps) {
+    fn show_game_info(&mut self, props: &UIProps) {
         let position = vec2(self.viewport_width - 400.0, 0.0);
         let size = vec2(400.0, 700.0);
         
@@ -140,27 +143,8 @@ impl UI {
                         backpack_item_size
                     )
                     .layout(Layout::Horizontal)
-                    .ui(ui, |ui| {
-                        let item_name = match item {
-                            Content::Rock(_) => "rock",
-                            Content::Tree(_) => "tree",
-                            Content::Garbage(_) => "garbage",
-                            Content::Fire => "fire",
-                            Content::Coin(_) => "coin",
-                            Content::Bin(_) => "bin",
-                            Content::Crate(_) => "crate",
-                            Content::Bank(_) => "bank",
-                            Content::Water(_) => "water",
-                            Content::Market(_) => "market",
-                            Content::Fish(_) => "fish",
-                            Content::Building => "building",
-                            Content::Bush(_) => "bush",
-                            Content::JollyBlock(_) => "jollyblock",
-                            Content::Scarecrow => "scarecrow",
-                            Content::None => "none",
-                        };
-    
-                        ui.label(None, &format!("{}", item_name));
+                    .ui(ui, |ui| {  
+                        ui.label(None, &format!("{}", item));
                         ui.same_line(150.0);
                         ui.label(None, &format!("{}", amount));
                     });
@@ -169,12 +153,7 @@ impl UI {
 
             ui.label(None, format!("Discoverable tiles: {}", props.discoverable_tiles).as_str());
             ui.label(None, format!("Score: {}", props.robot_score).as_str());
-            ui.label(None, format!("Time of day: {}", match props.time_of_day {
-                    DayTime::Morning => "Morning",
-                    DayTime::Afternoon => "Afternoon",
-                    DayTime::Night => "Night",
-                }).as_str()
-            );
+            ui.label(None, format!("Time of day: {:?}", props.time_of_day).as_str());
             ui.label(None, format!("Time clock: {}", props.time_of_day_string).as_str());
             ui.label(None, format!("Weather: {}", match props.weather_condition {
                 WeatherType::Sunny => "Sunny",
@@ -233,8 +212,12 @@ impl UI {
         .label("Help")
         .titlebar(true)
         .ui(&mut *root_ui(), |ui| {
-            ui.label(None, &format!("Toggle mouse grab: J"));
+            ui.label(None, &format!("Toggle mouse grab: G"));
+            ui.label(None, &format!("Toggle HUD: H"));
+            ui.label(None, &format!("Toggle tile info window: I"));
             ui.label(None, &format!("Toggle statistics window: F3"));
+            ui.label(None, &format!("Take screenshot: F2"));
+            ui.label(None, &format!("Exit: Esc"));
         });
     }
 
@@ -267,6 +250,27 @@ impl UI {
         });
     }
 
+    pub fn show_tile_info(&self, props: &UIProps) {
+        let position = vec2(self.viewport_width / 2.0 - 150.0, 0.0);
+        let size = vec2(300.0, 100.0);
+
+        widgets::Window::new(
+            hash!("tile_info_window"), 
+            position,
+            size
+        )
+        .label("Tile")
+        .titlebar(true)
+        .ui(&mut *root_ui(), |ui| {
+            let (x, z) = props.robot_coordinates;
+
+            if let Some(tile) = &props.explored_world_map[x][z] {
+                ui.label(None, format!("Tile type: {:?}", tile.tile_type).as_str());
+                ui.label(None, format!("Tile type: {}", tile.content).as_str());
+            }
+        });
+    }
+
     pub fn exit(&self) -> bool {
         self.exit
     }
@@ -276,10 +280,19 @@ impl UI {
     }
 
     pub(crate) fn render(&mut self, props: UIProps) {
-        draw_text("Press H for help", 0.0, self.viewport_height, 30.0, GREEN);
+        draw_text("Press H for help", 0.0, self.viewport_height, 50.0, GREEN);
 
-        self.show_game_info(props);
+        self.show_game_info(&props);
         
+        if self.show_tile_info {
+            self.show_tile_info(&props);
+        }
+        if self.show_stats {
+            self.show_stats();
+        }
+        if self.show_help {
+            self.show_help();
+        }
         if self.quit_requested {
             if self.mouse_grabbed_flag {
                 self.mouse_grabbed_flag = false;
@@ -289,12 +302,6 @@ impl UI {
                 self.toggle_mouse_grab();
             }
             self.show_exit_dialog();
-        }
-        if self.show_stats {
-            self.show_stats();
-        }
-        if self.show_help {
-            self.show_help();
         }
     }
 }
