@@ -87,6 +87,10 @@ impl UI {
         if is_key_pressed(self.keyboard_controls.toggle_statistics) {
             self.show_stats = !self.show_stats;
         }
+        if is_key_pressed(self.keyboard_controls.take_screenshot) {
+            //set_default_camera();
+            get_screen_data().export_png("screenshots/screenshot.png");
+        }
         if is_key_pressed(self.keyboard_controls.exit){
             self.quit_requested = true;
         }
@@ -213,10 +217,10 @@ impl UI {
         .titlebar(true)
         .ui(&mut *root_ui(), |ui| {
             ui.label(None, &format!("Toggle mouse grab: G"));
-            ui.label(None, &format!("Toggle HUD: H"));
+            ui.label(None, &format!("Camera mode: C"));
             ui.label(None, &format!("Toggle tile info window: I"));
             ui.label(None, &format!("Toggle statistics window: F3"));
-            ui.label(None, &format!("Take screenshot: F2"));
+            ui.label(None, &format!("WIP - Take screenshot: F2"));
             ui.label(None, &format!("Exit: Esc"));
         });
     }
