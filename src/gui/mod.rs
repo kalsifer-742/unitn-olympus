@@ -65,7 +65,7 @@ impl GUI {
         );
     }
 
-    pub fn render(&mut self, data: ChannelData, tick_time: &mut f32) {
+    pub(crate) fn render(&mut self, data: ChannelData, tick_time: &mut f32) {
         if self.ui.is_mouse_grabbed() {
             self.update_camera(); // This needs to be done first
         } else {
