@@ -67,35 +67,35 @@ impl Textures {
 impl Default for Textures {
     fn default() -> Self {
         Self {
-            robot: Texture2D::from_file_with_format(include_bytes!("../../assets/creeper.png"), Some(ImageFormat::Png)),
-            day_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/day_sky.png"), Some(ImageFormat::Png)),
-            afternoon_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/afternoon_sky.png"), Some(ImageFormat::Png)),
-            night_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/night_sky.png"), Some(ImageFormat::Png)),
-            water_block: Texture2D::from_file_with_format(include_bytes!("../../assets/underwater_opaque.png"), Some(ImageFormat::Png)),
-            sand_block: Texture2D::from_file_with_format(include_bytes!("../../assets/sand.png"), Some(ImageFormat::Png)),
-            grass_block: Texture2D::from_file_with_format(include_bytes!("../../assets/green_concrete_powder.png"),Some(ImageFormat::Png)),
-            street_block: Texture2D::from_file_with_format(include_bytes!("../../assets/dirt_path_top.png"), Some(ImageFormat::Png)),
-            hill_block: Texture2D::from_file_with_format(include_bytes!("../../assets/dirt.png"), Some(ImageFormat::Png)),
-            mountain_block: Texture2D::from_file_with_format(include_bytes!("../../assets/stone.png"), Some(ImageFormat::Png)),
-            snow_block: Texture2D::from_file_with_format(include_bytes!("../../assets/snow.png"), Some(ImageFormat::Png)),
-            lava_block: Texture2D::from_file_with_format(include_bytes!("../../assets/lava.png"), Some(ImageFormat::Png)),
-            teleport_block: Texture2D::from_file_with_format(include_bytes!("../../assets/beacon.png"), Some(ImageFormat::Png)),
-            wall_block: Texture2D::from_file_with_format(include_bytes!("../../assets/bedrock.png"), Some(ImageFormat::Png)),
-            rock_content: Texture2D::from_file_with_format(include_bytes!("../../assets/cobblestone.png"), Some(ImageFormat::Png)),
-            tree_content: Texture2D::from_file_with_format(include_bytes!("../../assets/tree.png"), Some(ImageFormat::Png)),
-            garbage_content: Texture2D::from_file_with_format(include_bytes!("../../assets/charcoal.png"), Some(ImageFormat::Png)),
-            fire_content: Texture2D::from_file_with_format(include_bytes!("../../assets/fire.png"), Some(ImageFormat::Png)),
-            coin_content: Texture2D::from_file_with_format(include_bytes!("../../assets/emerald.png"), Some(ImageFormat::Png)),
-            bin_content: Texture2D::from_file_with_format(include_bytes!("../../assets/hopper.png"), Some(ImageFormat::Png)),
-            crate_content: Texture2D::from_file_with_format(include_bytes!("../../assets/barrel.png"), Some(ImageFormat::Png)),
-            bank_content: Texture2D::from_file_with_format(include_bytes!("../../assets/gold_block.png"), Some(ImageFormat::Png)),
-            water_content: Texture2D::from_file_with_format(include_bytes!("../../assets/water_bucket.png"), Some(ImageFormat::Png)),
-            market_content: Texture2D::from_file_with_format(include_bytes!("../../assets/emerald_block.png"), Some(ImageFormat::Png)),
-            fish_content: Texture2D::from_file_with_format(include_bytes!("../../assets/tropical_fish.png"), Some(ImageFormat::Png)),
-            building_content: Texture2D::from_file_with_format(include_bytes!("../../assets/bricks.png"), Some(ImageFormat::Png)),
-            bush_content: Texture2D::from_file_with_format(include_bytes!("../../assets/berry_bush.png"), Some(ImageFormat::Png)),
-            jolly_block_content: Texture2D::from_file_with_format(include_bytes!("../../assets/jack_o_lantern.png"), Some(ImageFormat::Png)),
-            scarecrow_content: Texture2D::from_file_with_format(include_bytes!("../../assets/armor_stand.png"), Some(ImageFormat::Png)),
+            robot: Texture2D::from_file_with_format(include_bytes!("../../assets/robot/creeper.png"), Some(ImageFormat::Png)),
+            day_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/skybox/day_sky.png"), Some(ImageFormat::Png)),
+            afternoon_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/skybox/afternoon_sky.png"), Some(ImageFormat::Png)),
+            night_sky: Texture2D::from_file_with_format(include_bytes!("../../assets/skybox/night_sky.png"), Some(ImageFormat::Png)),
+            water_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/underwater_opaque.png"), Some(ImageFormat::Png)),
+            sand_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/sand.png"), Some(ImageFormat::Png)),
+            grass_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/green_concrete_powder.png"),Some(ImageFormat::Png)),
+            street_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/dirt_path_top.png"), Some(ImageFormat::Png)),
+            hill_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/dirt.png"), Some(ImageFormat::Png)),
+            mountain_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/stone.png"), Some(ImageFormat::Png)),
+            snow_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/snow.png"), Some(ImageFormat::Png)),
+            lava_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/lava.png"), Some(ImageFormat::Png)),
+            teleport_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/beacon.png"), Some(ImageFormat::Png)),
+            wall_block: Texture2D::from_file_with_format(include_bytes!("../../assets/tiles/stone_bricks.png"), Some(ImageFormat::Png)),
+            rock_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/cobblestone.png"), Some(ImageFormat::Png)),
+            tree_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/oak_log.png"), Some(ImageFormat::Png)),
+            garbage_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/coal_block.png"), Some(ImageFormat::Png)),
+            fire_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/fire.png"), Some(ImageFormat::Png)),
+            coin_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/gold_ore.png"), Some(ImageFormat::Png)),
+            bin_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/dropper_front_vertical.png"), Some(ImageFormat::Png)),
+            crate_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/barrel.png"), Some(ImageFormat::Png)),
+            bank_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/gold_block.png"), Some(ImageFormat::Png)),
+            water_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/water.png"), Some(ImageFormat::Png)),
+            market_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/emerald_block.png"), Some(ImageFormat::Png)),
+            fish_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/orange_glazed_terracotta.png"), Some(ImageFormat::Png)),
+            building_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/bricks.png"), Some(ImageFormat::Png)),
+            bush_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/azalea_top.png"), Some(ImageFormat::Png)),
+            jolly_block_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/jack_o_lantern.png"), Some(ImageFormat::Png)),
+            scarecrow_content: Texture2D::from_file_with_format(include_bytes!("../../assets/contents/hay_block_side.png"), Some(ImageFormat::Png)),
         }
     }
 }
@@ -124,7 +124,7 @@ impl Renderer {
     }
 
     pub fn draw_background(&self, props: &RendererProps, daylight_cycle: bool) {
-        clear_background(LIGHTGRAY);
+        clear_background(SKYBLUE);
 
         if daylight_cycle {
             let texture = match props.time_of_day {
@@ -212,13 +212,23 @@ impl Renderer {
                         color
                     );
 
-                    if tile.content != Content::None {
-                        draw_cube(
-                            vec3(offset + x as f32, 0.25 + tile.elevation as f32, offset + z as f32),
-                            vec3(0.5, 0.5, 0.5),
-                            Some(content_texture),
-                            WHITE
-                        );
+                    match tile.content {
+                        Content::None => {}
+                        Content::Water(_) => {
+                            draw_cube_wires(
+                                vec3(offset + x as f32, tile.elevation as f32, offset + z as f32),
+                                vec3(0.5, 0.5, 0.5),
+                                BLUE
+                            );
+                        }
+                        _ => {
+                            draw_cube(
+                                vec3(offset + x as f32, 0.25 + tile.elevation as f32, offset + z as f32),
+                                vec3(0.5, 0.5, 0.5),
+                                Some(content_texture),
+                                WHITE
+                            );
+                        }
                     }
                 }
             }
@@ -246,7 +256,7 @@ impl Renderer {
 
     pub fn render(&self, props: RendererProps, daylight_cycle: bool) {       
         self.draw_background(&props, daylight_cycle);
-        self.draw_grid(1.0, BLACK, GRAY);
+        self.draw_grid(1.0, BLACK, DARKGRAY);
         self.render_explored_map(&props);
         self.render_robot(&props);
     }

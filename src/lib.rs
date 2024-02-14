@@ -28,6 +28,7 @@ impl Visualizer {
     }
 
     pub async fn start(&mut self) {
+        //set_pc_assets_folder("assets");
         self.gui.ui.toggle_mouse_grab();
 
         loop {
