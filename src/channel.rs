@@ -18,7 +18,6 @@ struct Message {
     content: Vec<bool>,
 }
 
-#[derive(Clone)]
 pub(crate) struct ChannelData {
     pub explored_world_map: Vec<Vec<Option<Tile>>>,
     pub robot_coordinates: (usize, usize),
@@ -62,8 +61,8 @@ impl Default for Channel {
 }
 
 impl Channel {
-    pub(crate) fn receive(&self) -> ChannelData {
-        self.data.clone()
+    pub(crate) fn receive(&self) -> &ChannelData {
+        &self.data
     }
 
     pub fn send_game_info(&mut self, robot: & impl Runnable, world: &mut World) {

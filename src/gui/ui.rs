@@ -24,11 +24,11 @@ pub struct UI {
     daylight_cycle: bool,
 }
 
-pub struct UIProps {
+pub struct UIProps<'a> {
     pub discoverable_tiles: usize,
     pub robot_coordinates: (usize, usize),
     pub robot_energy: usize,
-    pub robot_backpack_contents: HashMap<Content, usize>,
+    pub robot_backpack_contents: &'a HashMap<Content, usize>,
     pub robot_backpack_size: usize,
     pub robot_score: f32,
     pub time_of_day: DayTime,
