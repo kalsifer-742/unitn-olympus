@@ -2,6 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use macroquad::{prelude::*, rand::ChooseRandom};
+use midgard::world_generator::{WorldGenerator, WorldGeneratorParameters};
 use rip_worldgenerator::MyWorldGen;
 use olympus::channel::Channel;
 use olympus::Visualizer;
@@ -96,7 +97,16 @@ async fn main() {
 
     // World Generator
     let world_size = 200;
-    let world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
+    
+    let params = WorldGeneratorParameters {
+        seed: 25,
+        world_size: 200,
+        elevation_multiplier: Some(50.0),
+        ..Default::default()
+    };
+    let world_generator = WorldGenerator::new(params);
+    //let world_generator = MyWorldGen::new_param(world_size, 5, 5, 5, true, false, 5, false, Some(25));
+    
     // Robot
     // Your robot must have channel as a field
     let robot = DummyRobot::new(Rc::clone(&channel));
