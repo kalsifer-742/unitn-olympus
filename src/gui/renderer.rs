@@ -210,13 +210,7 @@ impl Renderer {
                         color
                     );
 
-                    if tile.content == Content::None {
-                        draw_cube_wires(
-                            vec3(offset + x as f32, 0.25 + tile.elevation as f32, offset + z as f32),
-                            vec3(0.5, 0.5, 0.5),
-                            WHITE,
-                        );
-                    } else {
+                    if tile.content != Content::None {
                         draw_cube(
                             vec3(offset + x as f32, 0.25 + tile.elevation as f32, offset + z as f32),
                             vec3(0.5, 0.5, 0.5),
