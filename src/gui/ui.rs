@@ -7,6 +7,7 @@ use macroquad::ui::{root_ui, widgets, Layout};
 use macroquad::hash;
 use robotics_lib::world::environmental_conditions::{DayTime, WeatherType};
 use robotics_lib::world::tile::Content;
+use sys_info::{cpu_num, cpu_speed, mem_info, os_release, MemInfo};
 use crate::gui::keyboard_controls::KeyboardControls;
 
 pub struct UI {
@@ -188,7 +189,7 @@ impl UI {
 
     fn show_stats(&self) {
         let position = vec2(0.0, 0.0);
-        let size = vec2(200.0, 100.0);
+        let size = vec2(200.0, 200.0);
 
         widgets::Window::new(
             hash!("stats_window"), 
@@ -198,8 +199,25 @@ impl UI {
         .label("Statistics")
         .titlebar(true)
         .ui(&mut *root_ui(), |ui| {
+            ui.label(None, "--- MACROQUAD ---");
             ui.label(None, &format!("FPS: {}", get_fps()));
             ui.label(None, &format!("Texture count: {}", textures_count()));
+
+            ui.label(None, "--- SYSTEM ---");
+            //let os = linux_os_release().unwrap_or_default();
+            ui.label(None, &format!("OS: {}", os_release().unwrap_or("unknown".to_string())));
+            ui.label(None, &format!("CPU cores: {}", cpu_num().unwrap_or(0)));
+            ui.label(None, &format!("CPU speed: {} MHz", cpu_speed().unwrap_or(0)));
+            let ram = mem_info().unwrap_or(MemInfo {
+                total: 0,
+                free: 0,
+                avail: 0,
+                buffers: 0,
+                cached: 0,
+                swap_total: 0,
+                swap_free: 0
+            });
+            ui.label(None, &format!("RAM: {}/{} MB", (ram.total - ram.free) / 10_u64.pow(3), ram.total / 10_u64.pow(3)));
         });
     }
 
