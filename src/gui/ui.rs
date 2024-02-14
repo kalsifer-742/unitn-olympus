@@ -81,6 +81,9 @@ impl UI {
         if is_key_pressed(self.keyboard_controls.toggle_tile_info) {
             self.show_tile_info = !self.show_tile_info;
         }
+        if is_key_pressed(self.keyboard_controls.toggle_free_mouse) {
+            self.toggle_mouse_grab();
+        }
         if is_key_pressed(self.keyboard_controls.toggle_help) {
             self.show_help = !self.show_help;
         }
