@@ -11,7 +11,9 @@ pub struct KeyboardControls {
     pub move_down: KeyCode,
     pub toggle_tile_info: KeyCode,
     pub toggle_help: KeyCode,
-    pub toggle_statistics: KeyCode
+    pub toggle_statistics: KeyCode,
+    pub toggle_hud: KeyCode,
+    pub take_screenshot: KeyCode
 }
 
 impl Default for KeyboardControls {
@@ -28,6 +30,8 @@ impl Default for KeyboardControls {
             toggle_tile_info: KeyCode::I,
             toggle_help: KeyCode::H,
             toggle_statistics: KeyCode::F3,
+            toggle_hud: KeyCode::C,
+            take_screenshot: KeyCode::F2
         }
     }
 }

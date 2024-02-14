@@ -9,6 +9,8 @@ use crate::channel::ChannelData;
 use renderer::RendererProps;
 use ui::UIProps;
 
+use self::keyboard_controls::KeyboardControls;
+
 pub(crate) mod keyboard_controls;
 mod custom_camera;
 mod renderer;
@@ -18,6 +20,8 @@ pub struct GUI {
     camera: CustomCamera,
     renderer: Renderer,
     pub ui: UI,
+    keyboard_controls: KeyboardControls,
+    show_hud: bool,
 }
 
 impl GUI {
@@ -26,10 +30,16 @@ impl GUI {
             camera: Default::default(),
             renderer: Renderer::new(world_size),
             ui: UI::new(tick_time),
+            keyboard_controls: Default::default(),
+            show_hud: true,
         }
     }
 
     pub fn handle_input(&mut self) {
+        if is_key_pressed(self.keyboard_controls.toggle_hud) {
+            self.show_hud = !self.show_hud;
+        }
+
         self.camera.handle_input();
         self.ui.handle_input();
     }
@@ -74,7 +84,10 @@ impl GUI {
         } else {
             set_camera(self.camera.get_actual_camera());
         }
+        
         self.render_game(data);
-        self.render_ui(data);
+        if self.show_hud {
+            self.render_ui(data);
+        }
     }
 }
