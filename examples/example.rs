@@ -2,7 +2,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use macroquad::{prelude::*, rand::ChooseRandom};
+#[allow(unused_imports)]
 use midgard::world_generator::{WorldGenerator, WorldGeneratorParameters};
+#[allow(unused_imports)]
 use rip_worldgenerator::MyWorldGen;
 use olympus::channel::Channel;
 use olympus::Visualizer;
@@ -50,29 +52,12 @@ impl Runnable for DummyRobot {
         }
     }
 
-    fn get_energy(&self) -> &Energy {
-        &self.robot.energy
-    }
-
-    fn get_energy_mut(&mut self) -> &mut Energy {
-        &mut self.robot.energy
-    }
-
-    fn get_coordinate(&self) -> &Coordinate {
-        &self.robot.coordinate
-    }
-
-    fn get_coordinate_mut(&mut self) -> &mut Coordinate {
-        &mut self.robot.coordinate
-    }
-
-    fn get_backpack(&self) -> &BackPack {
-        &self.robot.backpack
-    }
-
-    fn get_backpack_mut(&mut self) -> &mut BackPack {
-        &mut self.robot.backpack
-    }
+    fn get_energy(&self) -> &Energy { &self.robot.energy }
+    fn get_energy_mut(&mut self) -> &mut Energy { &mut self.robot.energy }
+    fn get_coordinate(&self) -> &Coordinate { &self.robot.coordinate }
+    fn get_coordinate_mut(&mut self) -> &mut Coordinate { &mut self.robot.coordinate }
+    fn get_backpack(&self) -> &BackPack { &self.robot.backpack }
+    fn get_backpack_mut(&mut self) -> &mut BackPack { &mut self.robot.backpack }
 }
 
 // You probably don't want to edit this
