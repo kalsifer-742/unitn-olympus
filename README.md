@@ -6,7 +6,7 @@
 
 #### Prerequisites
 
-Macroqud has some OS dependencies so you need to install some packages:
+Macroquad has some OS dependencies, you need to install some packages:
 
 Refer to Macroquad repo [README](https://github.com/not-fl3/macroquad?tab=readme-ov-file) for instruction on other platforms.
 
