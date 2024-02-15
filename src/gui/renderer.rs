@@ -1,5 +1,3 @@
-use std::default;
-
 use macroquad::prelude::*;
 use robotics_lib::world::{environmental_conditions::DayTime, tile::{Content, Tile, TileType}};
 
