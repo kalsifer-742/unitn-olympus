@@ -90,10 +90,10 @@ impl UI {
         if is_key_pressed(self.keyboard_controls.toggle_statistics) {
             self.show_stats = !self.show_stats;
         }
-        if is_key_pressed(self.keyboard_controls.take_screenshot) {
-            //set_default_camera();
-            get_screen_data().export_png("screenshots/screenshot.png");
-        }
+        // if is_key_pressed(self.keyboard_controls.take_screenshot) {
+        //     //set_default_camera();
+        //     get_screen_data().export_png("screenshots/screenshot.png");
+        // }
         if is_key_pressed(self.keyboard_controls.exit){
             self.quit_requested = true;
         }
@@ -117,7 +117,7 @@ impl UI {
         .ui(&mut *root_ui(), |ui| {
             ui.label(None, format!("Game tick interval: ").as_str());
             ui.slider(hash!("tick_time_slider"), "[0.0 - 5.0]", 0.0..5.0, &mut self.tick_time.borrow_mut());
-            ui.checkbox(hash!("daylight_cicle_checkbox"), "Daylight cycle", &mut self.daylight_cycle);
+            ui.checkbox(hash!("daylight_cicle_checkbox"), "Show daylight cycle", &mut self.daylight_cycle);
             ui.label(None, "Energy: ");
             let max_energy_level = 1000.0; //const MAX_ENERGY_LEVEL: usize = 1000;
             let cursor = ui.canvas().cursor();
@@ -220,10 +220,10 @@ impl UI {
         .titlebar(true)
         .ui(&mut *root_ui(), |ui| {
             ui.label(None, &format!("Toggle mouse grab: G"));
-            ui.label(None, &format!("Camera mode: C"));
             ui.label(None, &format!("Toggle tile info window: I"));
             ui.label(None, &format!("Toggle statistics window: F3"));
-            ui.label(None, &format!("WIP - Take screenshot: F2"));
+            //ui.label(None, &format!("WIP - Take screenshot: F2"));
+            ui.label(None, &format!("Camera mode: C"));
             ui.label(None, &format!("Exit: Esc"));
         });
     }
@@ -287,7 +287,7 @@ impl UI {
     }
 
     pub(super) fn render(&mut self, props: UIProps) {
-        draw_text("Press H for help", 0.0, self.viewport_height, 50.0, GREEN);
+        draw_text("Press H for help", 0.0, self.viewport_height, 30.0, GREEN);
 
         self.show_game_info(&props);
         
