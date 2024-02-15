@@ -289,9 +289,9 @@ impl Renderer {
         for (x, row) in props.explored_world_map.iter().enumerate() {
             for (z, tile) in row.iter().enumerate() {
                 if let Some(tile) = tile {
-                    let mut color = WHITE;
+                    let mut tile_color = WHITE;
                     let tile_texture = match tile.tile_type {
-                        TileType::DeepWater => { color = GRAY; &self.textures.water_block }
+                        TileType::DeepWater => { tile_color = GRAY; &self.textures.water_block }
                         TileType::ShallowWater => &self.textures.water_block,
                         TileType::Sand => &self.textures.sand_block,
                         TileType::Grass => &self.textures.grass_block,
@@ -304,6 +304,7 @@ impl Renderer {
                         TileType::Wall => &self.textures.wall_block,
                     };
 
+                    let mut content_color = WHITE;
                     let content_texture = match tile.content {
                         Content::Rock(_) => &self.textures.rock_content,
                         Content::Tree(_) => &self.textures.tree_content,
@@ -317,36 +318,37 @@ impl Renderer {
                         Content::Market(_) => &self.textures.market_content,
                         Content::Fish(_) => &self.textures.fish_content,
                         Content::Building => &self.textures.building_content,
-                        Content::Bush(_) => &self.textures.bush_content,
+                        Content::Bush(_) => { content_color = LIGHTGRAY; &self.textures.bush_content }
                         Content::JollyBlock(_) => &self.textures.jolly_block_content,
                         Content::Scarecrow => &self.textures.scarecrow_content,
                         Content::None => tile_texture,
                     };
                     
+                    let elevation = if tile.elevation == 0 { tile.elevation + 1 } else { tile.elevation };
                     draw_affine_parallelepiped(
                         vec3(x as f32, 0.0, z as f32), //x as f32 * Vec3::X + z as f32 * Vec3::Z,
                         1.0 * Vec3::X,
-                        (tile.elevation as f32) * Vec3::Y,
+                        (elevation as f32) * Vec3::Y,
                         1.0 * Vec3::Z,
                         Some(tile_texture),
-                        color
+                        tile_color
                     );
 
                     match tile.content {
                         Content::None => {}
                         Content::Water(_) => {
                             draw_cube_wires(
-                                vec3(offset + x as f32, tile.elevation as f32, offset + z as f32),
+                                vec3(offset + x as f32, elevation as f32, offset + z as f32),
                                 vec3(0.5, 0.5, 0.5),
                                 BLUE
                             );
                         }
                         _ => {
                             draw_cube(
-                                vec3(offset + x as f32, 0.25 + tile.elevation as f32, offset + z as f32),
+                                vec3(offset + x as f32, 0.25 + elevation as f32, offset + z as f32),
                                 vec3(0.5, 0.5, 0.5),
                                 Some(content_texture),
-                                WHITE
+                                content_color
                             );
                         }
                     }
@@ -360,13 +362,15 @@ impl Renderer {
         let (x, z) = props.robot_coordinates;
         
         if let Some(tile) = &props.explored_world_map[x][z] {
+            let elevation = if tile.elevation == 0 { tile.elevation + 1 } else { tile.elevation };
+
             draw_line_3d(
                 vec3(offset + x as f32, self.world_map_size as f32, offset + z as f32),
-                vec3(offset + x as f32, tile.elevation as f32, offset + z as f32),
+                vec3(offset + x as f32, elevation as f32, offset + z as f32),
                 GREEN
             );
             draw_cube(
-                vec3(offset + x as f32, offset + tile.elevation as f32, offset + z as f32),
+                vec3(offset + x as f32, offset + elevation as f32, offset + z as f32),
                 vec3(1.0, 1.0, 1.0),
                 Some(&self.textures.robot),
                 WHITE
