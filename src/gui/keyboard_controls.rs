@@ -13,7 +13,7 @@ pub(super) struct KeyboardControls {
     pub(super) toggle_help: KeyCode,
     pub(super) toggle_statistics: KeyCode,
     pub(super) toggle_hud: KeyCode,
-    pub(super) take_screenshot: KeyCode
+    //pub(super) take_screenshot: KeyCode
 }
 
 impl Default for KeyboardControls {
@@ -31,7 +31,7 @@ impl Default for KeyboardControls {
             toggle_help: KeyCode::H,
             toggle_statistics: KeyCode::F3,
             toggle_hud: KeyCode::C,
-            take_screenshot: KeyCode::F2
+            //take_screenshot: KeyCode::F2
         }
     }
 }
