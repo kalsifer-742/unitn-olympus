@@ -11,21 +11,21 @@ use ui::UIProps;
 
 use self::keyboard_controls::KeyboardControls;
 
-pub(crate) mod keyboard_controls;
+mod keyboard_controls;
 mod custom_camera;
 mod renderer;
 mod ui;
 
-pub struct GUI {
+pub(super) struct GUI {
     camera: CustomCamera,
     renderer: Renderer,
-    pub ui: UI,
+    pub(super) ui: UI,
     keyboard_controls: KeyboardControls,
     show_hud: bool,
 }
 
 impl GUI {
-    pub fn new(world_size: usize, tick_time: Rc<RefCell<f32>>) -> Self {
+    pub(super) fn new(world_size: usize, tick_time: Rc<RefCell<f32>>) -> Self {
         Self {
             camera: Default::default(),
             renderer: Renderer::new(world_size),
@@ -35,7 +35,7 @@ impl GUI {
         }
     }
 
-    pub fn handle_input(&mut self) {
+    pub(super) fn handle_input(&mut self) {
         if is_key_pressed(self.keyboard_controls.toggle_hud) {
             self.show_hud = !self.show_hud;
         }
@@ -78,7 +78,7 @@ impl GUI {
         );
     }
 
-    pub(crate) fn render(&mut self, data: &ChannelData) {
+    pub(super) fn render(&mut self, data: &ChannelData) {
         if self.ui.is_mouse_grabbed() {
             self.update_camera(); // This needs to be done first
         } else {

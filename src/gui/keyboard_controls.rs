@@ -1,19 +1,19 @@
 use macroquad::input::KeyCode;
 
-pub struct KeyboardControls {
-    pub exit: KeyCode,
-    pub toggle_free_mouse: KeyCode,
-    pub move_forward: KeyCode,
-    pub move_backward: KeyCode,
-    pub move_left: KeyCode,
-    pub move_right: KeyCode,
-    pub move_up: KeyCode,
-    pub move_down: KeyCode,
-    pub toggle_tile_info: KeyCode,
-    pub toggle_help: KeyCode,
-    pub toggle_statistics: KeyCode,
-    pub toggle_hud: KeyCode,
-    pub take_screenshot: KeyCode
+pub(super) struct KeyboardControls {
+    pub(super) exit: KeyCode,
+    pub(super) toggle_free_mouse: KeyCode,
+    pub(super) move_forward: KeyCode,
+    pub(super) move_backward: KeyCode,
+    pub(super) move_left: KeyCode,
+    pub(super) move_right: KeyCode,
+    pub(super) move_up: KeyCode,
+    pub(super) move_down: KeyCode,
+    pub(super) toggle_tile_info: KeyCode,
+    pub(super) toggle_help: KeyCode,
+    pub(super) toggle_statistics: KeyCode,
+    pub(super) toggle_hud: KeyCode,
+    pub(super) take_screenshot: KeyCode
 }
 
 impl Default for KeyboardControls {

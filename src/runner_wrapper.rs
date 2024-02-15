@@ -3,7 +3,7 @@ use std::{cell::RefCell, rc::Rc};
 use macroquad::time::get_time;
 use robotics_lib::{runner::{Runnable, Runner}, world::world_generator::Generator};
 
-pub struct RunnerWrapper {
+pub(super) struct RunnerWrapper {
     runner: Runner,
     last_time: f64,
     current_time: f64,
@@ -11,7 +11,7 @@ pub struct RunnerWrapper {
 }
 
 impl RunnerWrapper {
-    pub fn new(robot: impl Runnable + 'static, mut world_generator: impl Generator, tick_time: Rc<RefCell<f32>>) -> Self {
+    pub(super) fn new(robot: impl Runnable + 'static, mut world_generator: impl Generator, tick_time: Rc<RefCell<f32>>) -> Self {
         Self {
             runner: Runner::new(Box::new(robot), &mut world_generator).expect("Error creating runner"),
             last_time: get_time(),
@@ -20,7 +20,7 @@ impl RunnerWrapper {
         }
     }
 
-    pub fn tick(&mut self) {
+    pub(super) fn tick(&mut self) {
         self.current_time = get_time();
         
         if (self.current_time - self.last_time) > *self.tick_time.borrow() as f64 {

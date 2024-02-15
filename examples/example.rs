@@ -11,13 +11,13 @@ use olympus::Visualizer;
 use robotics_lib::{energy::Energy, event::events::Event, interface::{go, Direction}, runner::{backpack::BackPack, Robot, Runnable}, world::{coordinates::Coordinate, World}};
 
 // Example implementation of a robot that works with olympus visualizer
-pub struct DummyRobot{
+struct DummyRobot{
     robot: Robot,
     channel: Rc<RefCell<Channel>> // Your robot must have a channel to comunicate with the GUI
 }
 
 impl DummyRobot {
-    pub fn new(channel: Rc<RefCell<Channel>>) -> DummyRobot {
+    fn new(channel: Rc<RefCell<Channel>>) -> DummyRobot {
         DummyRobot {
             robot: Robot::default(),
             channel

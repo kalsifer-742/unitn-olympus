@@ -10,7 +10,7 @@ use robotics_lib::world::tile::{Content, Tile};
 use sys_info::{cpu_num, cpu_speed, mem_info, os_release, MemInfo};
 use crate::gui::keyboard_controls::KeyboardControls;
 
-pub struct UI {
+pub(crate) struct UI {
     viewport_width: f32,
     viewport_height: f32,
     keyboard_controls: KeyboardControls,
@@ -26,7 +26,7 @@ pub struct UI {
     daylight_cycle: bool,
 }
 
-pub struct UIProps<'a> {
+pub(super) struct UIProps<'a> {
     pub explored_world_map: &'a Vec<Vec<Option<Tile>>>,
     pub discoverable_tiles: usize,
     pub robot_coordinates: (usize, usize),
@@ -40,7 +40,7 @@ pub struct UIProps<'a> {
 }
 
 impl UI {
-    pub fn new(tick_time: Rc<RefCell<f32>>) -> Self {
+    pub(super) fn new(tick_time: Rc<RefCell<f32>>) -> Self {
         Self {
             viewport_width: screen_width(),
             viewport_height: screen_height(),
@@ -58,7 +58,7 @@ impl UI {
         }
     }
 
-    pub(crate) fn is_mouse_grabbed(&self) -> bool {
+    pub(super) fn is_mouse_grabbed(&self) -> bool {
         self.is_mouse_grabbed
     }
 
@@ -77,7 +77,7 @@ impl UI {
         self.grab_mouse(self.is_mouse_grabbed);
     }
 
-    pub(crate) fn handle_input(&mut self) {
+    pub(super) fn handle_input(&mut self) {
         if is_key_pressed(self.keyboard_controls.toggle_tile_info) {
             self.show_tile_info = !self.show_tile_info;
         }
@@ -119,7 +119,7 @@ impl UI {
             ui.slider(hash!("tick_time_slider"), "[0.0 - 5.0]", 0.0..5.0, &mut self.tick_time.borrow_mut());
             ui.checkbox(hash!("daylight_cicle_checkbox"), "Daylight cycle", &mut self.daylight_cycle);
             ui.label(None, "Energy: ");
-            let max_energy_level = 1000.0; //pub(crate) const MAX_ENERGY_LEVEL: usize = 1000;
+            let max_energy_level = 1000.0; //const MAX_ENERGY_LEVEL: usize = 1000;
             let cursor = ui.canvas().cursor();
             ui.canvas().rect(
                 Rect::new(
@@ -257,7 +257,7 @@ impl UI {
         });
     }
 
-    pub fn show_tile_info(&self, props: &UIProps) {
+    fn show_tile_info(&self, props: &UIProps) {
         let position = vec2(self.viewport_width / 2.0 - 150.0, 0.0);
         let size = vec2(300.0, 100.0);
 
@@ -278,15 +278,15 @@ impl UI {
         });
     }
 
-    pub fn exit(&self) -> bool {
+    pub(crate) fn exit(&self) -> bool {
         self.exit
     }
 
-    pub fn is_day_light_cycle_on(&self) -> bool {
+    pub(super) fn is_day_light_cycle_on(&self) -> bool {
         self.daylight_cycle
     }
 
-    pub(crate) fn render(&mut self, props: UIProps) {
+    pub(super) fn render(&mut self, props: UIProps) {
         draw_text("Press H for help", 0.0, self.viewport_height, 50.0, GREEN);
 
         self.show_game_info(&props);
