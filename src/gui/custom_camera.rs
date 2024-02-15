@@ -29,6 +29,10 @@ impl CustomCamera {
         &self.actual_camera
     }
 
+    pub(super) fn get_front(&self) -> Vec3 {
+        self.front
+    }
+
     fn update_position(&mut self, direction: Direction) {
         let front = self.front * self.move_speed;
         let right = self.front.cross(self.up).normalize() * self.move_speed;
@@ -44,7 +48,7 @@ impl CustomCamera {
     }
 
     fn update_orientation(&mut self, new_mouse_position: Vec2) {
-        let mouse_delta = new_mouse_position - self.mouse_position;
+        let mouse_delta = new_mouse_position - self.mouse_position; //mouse_delta_position
         self.mouse_position = new_mouse_position;
 
         self.pitch += mouse_delta.y * -self.look_speed;

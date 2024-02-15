@@ -49,14 +49,15 @@ impl GUI {
         set_camera(self.camera.get_actual_camera());
     }
     
-    fn render_game(&self, data: &ChannelData) {
+    fn render_game(&self, data: &ChannelData, camera_front: Vec3) {
         self.renderer.render(
             RendererProps { 
                 explored_world_map: &data.explored_world_map,
                 robot_coordinates: data.robot_coordinates,
                 time_of_day: data.time_of_day
             },
-            self.ui.is_day_light_cycle_on()
+            self.ui.is_day_light_cycle_on(),
+            camera_front
         );
     }
     
@@ -85,7 +86,7 @@ impl GUI {
             set_camera(self.camera.get_actual_camera());
         }
         
-        self.render_game(data);
+        self.render_game(data, self.camera.get_front());
         if self.show_hud {
             self.render_ui(data);
         }
