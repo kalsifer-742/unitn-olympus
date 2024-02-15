@@ -101,19 +101,19 @@ impl Default for Textures {
 }
 
 #[derive(Clone)]
-pub struct RendererProps<'a> {
+pub(super) struct RendererProps<'a> {
     pub explored_world_map: &'a Vec<Vec<Option<Tile>>>,
     pub robot_coordinates: (usize, usize),
     pub time_of_day: DayTime
 }
 
-pub struct Renderer {
+pub(super) struct Renderer {
     world_map_size: usize,
     textures: Textures,
 }
 
 impl Renderer {
-    pub fn new(world_map_size: usize) -> Self {
+    pub(super) fn new(world_map_size: usize) -> Self {
         let textures = Textures::default();
         textures.init();
             
@@ -123,7 +123,7 @@ impl Renderer {
         }
     }
 
-    pub fn draw_background(&self, props: &RendererProps, daylight_cycle: bool) {
+    fn draw_background(&self, props: &RendererProps, daylight_cycle: bool) {
         clear_background(SKYBLUE);
 
         if daylight_cycle {
@@ -254,7 +254,7 @@ impl Renderer {
         }
     }
 
-    pub fn render(&self, props: RendererProps, daylight_cycle: bool) {       
+    pub(super) fn render(&self, props: RendererProps, daylight_cycle: bool) {       
         self.draw_background(&props, daylight_cycle);
         self.draw_grid(1.0, BLACK, DARKGRAY);
         self.render_explored_map(&props);

@@ -2,7 +2,7 @@ use macroquad::input::{mouse_position, is_key_down};
 use macroquad::{camera::Camera3D, math::{vec3, Vec2, Vec3}};
 use crate::gui::keyboard_controls::KeyboardControls;
 
-pub struct CustomCamera {
+pub(super) struct CustomCamera {
     actual_camera: Camera3D,
     position: Vec3,
     up: Vec3,
@@ -15,7 +15,7 @@ pub struct CustomCamera {
     keyboard_controls: KeyboardControls
 }
 
-pub enum Direction {
+enum Direction {
     Forward,
     Backward,
     Left,
@@ -25,11 +25,11 @@ pub enum Direction {
 }
 
 impl CustomCamera {
-    pub fn get_actual_camera(&self) -> &Camera3D {
+    pub(super) fn get_actual_camera(&self) -> &Camera3D {
         &self.actual_camera
     }
 
-    pub fn update_position(&mut self, direction: Direction) {
+    fn update_position(&mut self, direction: Direction) {
         let front = self.front * self.move_speed;
         let right = self.front.cross(self.up).normalize() * self.move_speed;
     
@@ -43,7 +43,7 @@ impl CustomCamera {
         }
     }
 
-    pub fn update_orientation(&mut self, new_mouse_position: Vec2) {
+    fn update_orientation(&mut self, new_mouse_position: Vec2) {
         let mouse_delta = new_mouse_position - self.mouse_position;
         self.mouse_position = new_mouse_position;
 
@@ -53,7 +53,7 @@ impl CustomCamera {
         self.pitch = self.pitch.clamp(-1.5, 1.5);
     }
 
-    pub fn update(&mut self) {
+    pub(super) fn update(&mut self) {
         self.front = Vec3::new(
             self.yaw.cos() * self.pitch.cos(),
             self.pitch.sin(),
@@ -94,7 +94,7 @@ impl CustomCamera {
         self.update_orientation(mouse_position().into())
     }
 
-    pub fn handle_input(&mut self) {
+    pub(super) fn handle_input(&mut self) {
         self.handle_keys();
         self.handle_mouse();
     }

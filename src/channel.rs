@@ -18,7 +18,7 @@ struct Message {
     content: Vec<bool>,
 }
 
-pub(crate) struct ChannelData {
+pub(super) struct ChannelData {
     pub explored_world_map: Vec<Vec<Option<Tile>>>,
     pub robot_coordinates: (usize, usize),
     pub robot_energy: usize,
@@ -61,7 +61,7 @@ impl Default for Channel {
 }
 
 impl Channel {
-    pub(crate) fn receive(&self) -> &ChannelData {
+    pub(super) fn receive(&self) -> &ChannelData {
         &self.data
     }
 
