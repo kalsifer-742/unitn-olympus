@@ -1774,7 +1774,7 @@ dependencies = [
 
 [[package]]
 name = "olympus"
-version = "0.1.0"
+version = "1.2.0"
 dependencies = [
  "macroquad",
  "midgard",
@@ -2153,9 +2153,9 @@ checksum = "216080ab382b992234dda86873c18d4c48358f5cfcb70fd693d7f6f2131b628b"
 
 [[package]]
 name = "rip_worldgenerator"
-version = "0.5.54"
+version = "0.5.56"
 source = "sparse+https://advancedprogramming.disi.unitn.it/api/v1/crates/"
-checksum = "256945552b2ae1a2e891ad9f800839cb65533b3e7d82f6ffd79ae25ed9ea2dc3"
+checksum = "1c579125091eb68c3ace623ef77e374a6d670e901c3b3ce4c933ccd13172e518"
 dependencies = [
  "disjoint-sets",
  "dsu-tree",
