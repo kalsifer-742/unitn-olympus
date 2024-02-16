@@ -14,7 +14,7 @@ macroquad = "0.4.4"
 sys-info = "0.9.1"
 
 [dev-dependencies]
-rip_worldgenerator = { version = "0.5.56", registry = "kellnr" }
+rip_worldgenerator = { version = "0.5.57", registry = "kellnr" }
 midgard = { version = "0.1.4", registry = "kellnr" }
 
 [[example]]
