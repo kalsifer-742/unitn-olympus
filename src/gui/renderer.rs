@@ -165,7 +165,7 @@ float fbm ( in vec2 _st) {
 }
 
 void main() {
-    vec2 st = gl_FragCoord.xy/vec2(500.0) + (-u_camera_target.xy);
+    vec2 st = gl_FragCoord.xy/vec2(500.0) + u_camera_target.xy;
 
     vec2 q = vec2(0.);
     q.x = fbm( st + 0.00*u_time);
