@@ -2153,9 +2153,9 @@ checksum = "216080ab382b992234dda86873c18d4c48358f5cfcb70fd693d7f6f2131b628b"
 
 [[package]]
 name = "rip_worldgenerator"
-version = "0.5.56"
+version = "0.5.57"
 source = "sparse+https://advancedprogramming.disi.unitn.it/api/v1/crates/"
-checksum = "1c579125091eb68c3ace623ef77e374a6d670e901c3b3ce4c933ccd13172e518"
+checksum = "6c36e459979f8c17440c3390819d82d6a515576547c21c230d09d2518c155d28"
 dependencies = [
  "disjoint-sets",
  "dsu-tree",
