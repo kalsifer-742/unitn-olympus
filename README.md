@@ -33,7 +33,7 @@ Add olympus as a dependency to Cargo.toml:
 
 ```toml
 [dependencies]
-olympus = { git = "https://github.com/Kalsifer-742/olympus.git" tag="*" }
+olympus = { git = "https://github.com/Kalsifer-742/olympus.git", tag="*" }
 ```
 
 In this way you will be always synced to the latest release.
