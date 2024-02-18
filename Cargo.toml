@@ -14,7 +14,10 @@ macroquad = "0.4.4"
 sys-info = "0.9.1"
 
 [dev-dependencies]
+bmo = { git = "https://github.com/silvanusbordignon/bmo.git" }
+ai = { git = "https://github.com/arvt/ai.git" }
 rip_worldgenerator = { version = "0.5.57", registry = "kellnr" }
+midgard = { version = "0.2.1", registry = "kellnr" }
 
 [[example]]
 name = "example"
