@@ -17,7 +17,7 @@ pub struct Visualizer {
 }
 
 impl Visualizer {
-    pub fn new(robot: impl Runnable + 'static, world_generator: impl Generator, world_size: usize, channel: Rc<RefCell<Channel>>) -> Self {        
+    pub fn new(robot: Box<dyn Runnable> , world_generator: impl Generator, world_size: usize, channel: Rc<RefCell<Channel>>) -> Self {        
         let tick_time = Rc::new(RefCell::new(0.5));
         
         Self {

@@ -11,9 +11,9 @@ pub(super) struct RunnerWrapper {
 }
 
 impl RunnerWrapper {
-    pub(super) fn new(robot: impl Runnable + 'static, mut world_generator: impl Generator, tick_time: Rc<RefCell<f32>>) -> Self {
+    pub(super) fn new(robot: Box<dyn Runnable>, mut world_generator: impl Generator, tick_time: Rc<RefCell<f32>>) -> Self {
         Self {
-            runner: Runner::new(Box::new(robot), &mut world_generator).expect("Error creating runner"),
+            runner: Runner::new(robot, &mut world_generator).expect("Error creating runner"),
             last_time: get_time(),
             current_time: get_time(),
             tick_time
