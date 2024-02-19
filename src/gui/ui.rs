@@ -219,6 +219,7 @@ impl UI {
         .label("Help")
         .titlebar(true)
         .ui(&mut *root_ui(), |ui| {
+            ui.label(None, &format!("WASD + mouse to move"));
             ui.label(None, &format!("Toggle mouse grab: G"));
             ui.label(None, &format!("Toggle tile info window: I"));
             ui.label(None, &format!("Toggle statistics window: F3"));
