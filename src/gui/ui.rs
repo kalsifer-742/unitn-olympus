@@ -288,7 +288,7 @@ impl UI {
     }
 
     pub(super) fn render(&mut self, props: UIProps) {
-        draw_text("Press H for help", 0.0, self.viewport_height, 30.0, GREEN);
+        draw_text("Press H for help", 0.0, self.viewport_height - 80.0, 30.0, GREEN);
 
         self.show_game_info(&props);
         
