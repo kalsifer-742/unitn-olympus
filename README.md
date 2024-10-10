@@ -1,5 +1,8 @@
 # Olympus
 
+> [!NOTE]
+> ### Advanced Programming course 2023/2024 - UniTN - prof. Patrignani
+
 ## GUI for the robotics_lib
 
 ### Installation
