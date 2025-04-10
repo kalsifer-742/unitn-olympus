@@ -3,6 +3,10 @@
 > [!NOTE]
 > ### Advanced Programming course 2023/2024 - UniTN - prof. Patrignani
 
+### Demo
+
+- [https://youtu.be/jAltadEf6QI](Video)
+
 ## GUI for the robotics_lib
 
 ### Installation
