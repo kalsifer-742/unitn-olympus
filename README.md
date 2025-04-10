@@ -5,7 +5,7 @@
 
 ### Demo
 
-- [https://youtu.be/jAltadEf6QI](Video)
+- [Video](https://youtu.be/jAltadEf6QI)
 
 ## GUI for the robotics_lib
 
