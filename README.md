@@ -7,6 +7,8 @@
 
 - [Video](https://youtu.be/jAltadEf6QI)
 
+(The program runs smoothly, but the video capture is laggy)
+
 ## GUI for the robotics_lib
 
 ### Installation
